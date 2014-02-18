@@ -19,6 +19,11 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+    <style>
+#formattedAbstract:hover { background: #eee; }
+.active { background: #eee; }
+</style>
   </head>
 
   <body>
@@ -28,8 +33,9 @@
     <div class="jumbotron">
       <div class="container">
         <h1><span class="glyphicon glyphicon-file"></span> Paper Abstract Formatter</h1>
-        <p>It always annoyed me when I had to hand-in an abstract for a coference or journal through EasyChair, that I could not simply copy the abstract from my PDF. When I did, I had to manually delete all these stupid linebreaks that stemmed from the two-column article layout. Well, despair no more, because my frutration led to the Paper Abstract Formatter. It not only removes all those unwanted line breaks for you, but it also does some sanity checking on your abstract.</p>
-        <p><a class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a></p>
+        <p>It always annoyed me when I had to hand-in an abstract for a coference or journal through EasyChair, that I could not simply copy the abstract from my PDF.</p>
+	<div id="collapseOne" class="panel-collapse collapse"><p>When I did, I had to manually delete all these stupid linebreaks that stemmed from the two-column article layout. When you had automated hy-phe-na-tion (as you do in LaTeX) things got really ugly since you then had to repair all the hyphenated words. As it happens, you are usually under tight time pressure when submitting your abstract. Well, despair no more, because my frustration led to the Paper Abstract Formatter. It not only removes all those unwanted line breaks for you, but it also does some nice sanity checking on your abstract, giving you that comfy feeling of a really tiny tool that just does what it should do.</p><p></p></div>
+        <p><button class="btn btn-primary btn-lg" role="button" data-toggle="collapse" href="#collapseOne" onClick="toggleCollapse();" id="collapseButton">Learn more &raquo;</button></p>
       </div>
     </div>
 
@@ -37,22 +43,32 @@
       <!-- Example row of columns -->
       <div class="row">
         <div class="col-md-6">
-          <h2>Your Abstract.</h2>
+          <h2>Your Raw Abstract.</h2>
+	  <textarea placeholder="Your abstract
+																																																		
+copied from the PDF!" id="abstractTextarea" class="form-control"></textarea>
 
-	  <textarea placeholder="Put your abstract here" style="width:100%" id="abstractTextarea" onChange=""></textarea>
-          <p><a class="btn btn-default" href="#" role="button" onClick="$('#abstractTextarea').val('')">Clear field.</a></p>
         </div>
-        <div class="col-md-6">
-          <h2>Your prepared Abstract.</h2>
-          <p id="formattedAbstract">Your formatted abstract!</p>
-	          <p><a class="btn btn-default" href="#" role="button" onClick="">Copy to Clipboard.</a></p>
+        <div class="col-md-6" id="prepared">
+          <h2>Your Prepared Abstract.</h2>
+	  <div id="infoMessage"></div><div id="infoMessages"></div>
+          <p><span id="formattedAbstract">Your formatted abstract from the PDF!</span></p>
+       </div>
+      </div>
+      <div class="row">
+       <div class="col-md-6"><p><div class="control-group"><button type="button" class="btn btn-default" onClick="clearAbstract();">Clear Abstract.</button></div></p>
+       </div>
+       <div class="col-md-6">
        </div>
       </div>
 
       <hr>
 
-      <footer>
-        <p>&copy; Moritz Beller 2014</p>
+      <footer><p style="text-align:center;">
+					<small>Made with &nbsp;<i class="glyphicon glyphicon-heart"></i>&nbsp; by
+						<a href="http://www.st.ewi.tudelft.nl/~mbeller/">Moritz Beller</a>.
+					</small>
+				</p>
       </footer>
     </div> <!-- /container -->
 
@@ -63,19 +79,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/jquery-2.1.0.min.js"></script>
-    <script src='js/jquery.autosize.min.js'></script>
+    <script src="js/jquery.autosize.min.js"></script>
+    <script src="js/htmlHelper.js"></script>    
     <script src="js/abstractFormatting.js"></script>
-    <script>
-$(document).ready(function(){
-    $('#abstractTextarea').autosize();   
-});
-
-$('#abstractTextarea').bind('input propertychange', function() {
-var inputText = $('#abstractTextarea').val();
-var processedText = formatText(inputText);
-$('#formattedAbstract').text(inputText);
-});
-    </script>
   </body>
 </html>
 
