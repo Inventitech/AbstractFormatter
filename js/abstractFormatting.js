@@ -7,6 +7,7 @@ var formatText = function (inputText) {
     inputText = checkAbstractStart(inputText);
     var length = checkLength(inputText);
     checkParagraphEndsCorrectly(inputText, length);
+    checkReferences(inputText);
 
     inputText = checkTeXSyntax(inputText);
 
@@ -72,13 +73,14 @@ var checkLength = function (inputText) {
     if (wordsInAbstract != null) {
         numberOfWords = inputText.match(/\b/g).length / 2;
     }
-
+    
+    removeInfoMessage(divId);
     if (numberOfWords > 200 && numberOfWords <= 250) {
-	addInfoMessage(divId, 'alert alert-warning', "Your abstract exceeds 200 words. This is often considered rather long.");
+	addInfoMessage(divId, 'alert alert-warning', "Your abstract exceeds 200 words: " + numberOfWords + " words is often considered rather long.");
     } else if (numberOfWords > 250 && numberOfWords <= 500) {
-	addInfoMessage(divId, 'alert alert-danger', "Your text exceeds 250 words. This is often considered too long for an article.");
+	addInfoMessage(divId, 'alert alert-danger', "Your text exceeds 250 words: " + numberOfWords + " words is often considered too long for an article.");
     } else if (numberOfWords > 500) {
-	addInfoMessage(divId, 'alert alert-danger', "Your text exceeds 500 words. This is <strong>generally considered too long.</strong>");
+	addInfoMessage(divId, 'alert alert-danger', "Your text exceeds 500 words: " + numberOfWords + " words is <strong>generally considered too long.</strong>");
     } else {
 	removeInfoMessage(divId);
     }
@@ -94,6 +96,24 @@ var checkParagraphEndsCorrectly = function (inputText, length) {
     }
     else {
 	removeInfoMessage(divId);
+    }
+}
+
+// checks whether abstract contains references. If so, gives a warning.
+var checkReferences = function (inputText) {
+    var divId = 'checkReferences';
+    if (containsReferences(inputText)) {
+	addInfoMessage(divId, 'alert alert-warning', "Your abstract contains references. It should not do that.");
+    } 
+    else {
+	removeInfoMessage(divId);
+    }
+}
+
+// Returns true if the abstract contains references such as [5]
+var containsReferences = function (inputText) {
+    if(inputText.match(/\[(.*)?\d(.*)?\]/g) != null) {
+	return true;
     }
 }
 
