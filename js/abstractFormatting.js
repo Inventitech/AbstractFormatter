@@ -30,7 +30,7 @@ var formatText = function(inputText) {
     return inputText;
 };
 
-
+// Removes lines commented out using % in latex
 var removeCommentedOutLines = function(inputText) {
     return inputText.replace(/^%.*$/mg, '');
 };
