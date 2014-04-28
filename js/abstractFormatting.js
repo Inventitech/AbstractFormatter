@@ -16,6 +16,7 @@
 
 // General formatting method calling sub-check functions.
 var formatText = function (inputText) {
+    inputText = removeCommentedOutLines(inputText);
     checkMultipleParagraphs(inputText);
     inputText = removeWhitespaces(inputText);
 
@@ -27,6 +28,11 @@ var formatText = function (inputText) {
     inputText = checkTeXSyntax(inputText);
 
     return inputText;
+}
+
+
+var removeCommentedOutLines = function(inputText) {
+    return inputText.replace(/^%.*$/mg, '');
 }
 
 // checks whether abstract contains multiple paragraphs. If so, gives a warning that they'll be flattened.
