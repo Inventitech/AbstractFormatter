@@ -33,10 +33,9 @@ var formatText = function (inputText) {
 var checkMultipleParagraphs = function (inputText) {
     var divId = 'multipleParagraphs';
     if (containsMultipleParagraphs(inputText)) {
-	addInfoMessage(divId, 'alert alert-info', "It appears to me, your abstract contains multiple paragraphs. I flattened them.");
-    } 
-    else {
-	removeInfoMessage(divId);
+        addInfoMessage(divId, 'alert alert-info', "It appears to me, your abstract contains multiple paragraphs. I flattened them.");
+    } else {
+        removeInfoMessage(divId);
     }
 }
 
@@ -62,7 +61,7 @@ var removeWhitespaces = function (inputText) {
 // Checks the start of the abstract and removes abstract from its beginning.
 var checkAbstractStart = function (inputText) {
     if(startsWithAbstract(inputText)) {
-	inputText = inputText.replace(/^abstract(\W)*/i, '');
+        inputText = inputText.replace(/^abstract(\W)*/i, '');
     }
     return inputText;
 }
@@ -71,12 +70,11 @@ var checkAbstractStart = function (inputText) {
 var startsWithAbstract = function (inputText) {
     var divId = 'abstractInfo';
     if(inputText.match(/^abstract(\W)*/i) != null) {
-	addInfoMessage(divId, 'alert alert-warning', "Your abstract begins with the words abstract. I removed them for you.");
-	return true;
-    }
-    else {
-	removeInfoMessage(divId);
-	return false;
+        addInfoMessage(divId, 'alert alert-warning', "Your abstract begins with the words abstract. I removed them for you.");
+        return true;
+    } else {
+        removeInfoMessage(divId);
+        return false;
     }
 }
 
@@ -88,16 +86,16 @@ var checkLength = function (inputText) {
     if (wordsInAbstract != null) {
         numberOfWords = inputText.match(/\b/g).length / 2;
     }
-    
+
     removeInfoMessage(divId);
     if (numberOfWords > 200 && numberOfWords <= 250) {
-	addInfoMessage(divId, 'alert alert-warning', "Your abstract exceeds 200 words: " + numberOfWords + " words is often considered rather long.");
+        addInfoMessage(divId, 'alert alert-warning', "Your abstract exceeds 200 words: " + numberOfWords + " words is often considered rather long.");
     } else if (numberOfWords > 250 && numberOfWords <= 500) {
-	addInfoMessage(divId, 'alert alert-danger', "Your text exceeds 250 words: " + numberOfWords + " words is often considered too long for an article.");
+        addInfoMessage(divId, 'alert alert-danger', "Your text exceeds 250 words: " + numberOfWords + " words is often considered too long for an article.");
     } else if (numberOfWords > 500) {
-	addInfoMessage(divId, 'alert alert-danger', "Your text exceeds 500 words: " + numberOfWords + " words is <strong>generally considered too long.</strong>");
+        addInfoMessage(divId, 'alert alert-danger', "Your text exceeds 500 words: " + numberOfWords + " words is <strong>generally considered too long.</strong>");
     } else {
-	removeInfoMessage(divId);
+        removeInfoMessage(divId);
     }
 
     return numberOfWords;
@@ -107,10 +105,9 @@ var checkLength = function (inputText) {
 var checkParagraphEndsCorrectly = function (inputText, length) {
     var divId = 'paragraphEnd';
     if (inputText.match(/[.?!]$/) === null && length > 3) {
-	addInfoMessage(divId, 'alert alert-danger', "Your last sentence does not end in a fullstop, question or exlclemation mark!");
-    }
-    else {
-	removeInfoMessage(divId);
+        addInfoMessage(divId, 'alert alert-danger', "Your last sentence does not end in a fullstop, question or exlclemation mark!");
+    } else {
+        removeInfoMessage(divId);
     }
 }
 
@@ -118,17 +115,16 @@ var checkParagraphEndsCorrectly = function (inputText, length) {
 var checkReferences = function (inputText) {
     var divId = 'checkReferences';
     if (containsReferences(inputText)) {
-	addInfoMessage(divId, 'alert alert-warning', "Your abstract contains references. It should not do that.");
-    } 
-    else {
-	removeInfoMessage(divId);
+        addInfoMessage(divId, 'alert alert-warning', "Your abstract contains references. It should not do that.");
+    } else {
+        removeInfoMessage(divId);
     }
 }
 
 // Returns true if the abstract contains references such as [5]
 var containsReferences = function (inputText) {
     if(inputText.match(/\[(.*)?\d(.*)?\]/g) != null) {
-	return true;
+        return true;
     }
 }
 
