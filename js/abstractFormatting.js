@@ -105,7 +105,7 @@ var checkLength = function (inputText) {
 var checkParagraphEndsCorrectly = function (inputText, length) {
     var divId = 'paragraphEnd';
     if (inputText.match(/[.?!]$/) === null && length > 3) {
-        addInfoMessage(divId, 'alert alert-danger', "Your last sentence does not end in a fullstop, question or exlclemation mark!");
+        addInfoMessage(divId, 'alert alert-danger', "Your last sentence does not end in a fullstop, question or exclamation mark!");
     } else {
         removeInfoMessage(divId);
     }
