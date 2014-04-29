@@ -44,7 +44,7 @@ var removeCommentedOutLines = function(inputText) {
 var checkMultipleParagraphs = function(inputText) {
     var divId = 'multipleParagraphs';
     if (containsLinebreak(inputText)) {
-        addInfoMessage(divId, 'alert alert-info', 'I see multiple paragraphs, or a linebreak. Most abstracts have just one paragraph. ');
+        addInfoMessage(divId, 'alert alert-info', 'I see multiple paragraphs, or a linebreak. Most abstracts have just one paragraph, so I flattened them. ');
     } else {
         removeInfoMessage(divId);
     }
@@ -54,7 +54,7 @@ var checkMultipleParagraphs = function(inputText) {
 var containsLinebreak = function(inputText) {
 	inputText = inputText.replace(/ /gi, '');
     inputText = inputText.replace(/[\f\t\v\u00A0\u2028\u2029]/gi, '');
-    if (inputText.match(/\s+\S+/g) != null) {
+    if (inputText.match(/\s{2,}\S+/g) != null) {
         return true;
     }
     return false;
