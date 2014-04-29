@@ -23,7 +23,7 @@ $(document).ready(function(){
 
 // refreshes Abstract on textarea change
 $('#abstractTextarea').bind('input propertychange', function() {
- refreshPreparedAbstract();
+	refreshPreparedAbstract();
 });
 
 var refreshPreparedAbstract = function() {
@@ -34,7 +34,8 @@ var refreshPreparedAbstract = function() {
 
 var clearAbstract = function() {
     $('#abstractTextarea').val('').trigger('autosize.resize'); 
-    $('#formattedAbstract').text('Your formatted abstract from the PDF!');
+    refreshPreparedAbstract();
+    $('#formattedAbstract').text('Your formatted abstract from the PDF or LaTeX source!');
 };
 
 // Function for dynamic dispatching of toggle text
@@ -42,10 +43,9 @@ collapsed = true;
 var toggleCollapse = function() {
     collapsed = !collapsed;
     if(collapsed === true) {
-	$('#collapseButton').html('Learn more &raquo;');
-    }
-    else {
-	$('#collapseButton').html('&laquo; Learn less');
+    	$('#collapseButton').html('Learn more &raquo;');
+    } else {
+    	$('#collapseButton').html('&laquo; Learn less');
     }
 };
 
@@ -80,8 +80,6 @@ $('#prepared').hover(
        function(){ $('#formattedAbstract').addClass('active'); },
        function(){ $('#formattedAbstract').removeClass('active'); }
 );
-
-
 
 // Adds a generic info message in the infoMessages div in the HTML
 var addInfoMessage = function(divId, divClasses, message) {
