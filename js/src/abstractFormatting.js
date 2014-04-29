@@ -15,6 +15,10 @@
 
 // This file provides the main abstract formatting support.
 
+// Everything else is just a toy input, really.
+var leastSensibleWords = 10;
+
+
 // General formatting method calling sub-check functions.
 var formatText = function(inputText) {
     inputText = removeCommentedOutLines(inputText);
@@ -102,7 +106,9 @@ var checkLength = function(inputText) {
     }
 
     removeInfoMessage(divId);
-    if (numberOfWords > 200 && numberOfWords <= 250) {
+    if (numberOfWords > leastSensibleWords && numberOfWords < 100) {
+        addInfoMessage(divId, 'alert alert-warning', 'Your abstract has fewer than 100 words: ' + numberOfWords + ' words is often considered very short.');
+    } else if (numberOfWords > 200 && numberOfWords <= 250) {
         addInfoMessage(divId, 'alert alert-warning', 'Your abstract exceeds 200 words: ' + numberOfWords + ' words is often considered rather long.');
     } else if (numberOfWords > 250 && numberOfWords <= 500) {
         addInfoMessage(divId, 'alert alert-danger', 'Your text exceeds 250 words: ' + numberOfWords + ' words is often considered too long for an article.');
@@ -118,7 +124,7 @@ var checkLength = function(inputText) {
 // Checks whether the abstract ends correctly, with a fullstop, question or exclamation mark.
 var checkParagraphEndsCorrectly = function(inputText, length) {
     var divId = 'paragraphEnd';
-    if (inputText.match(/[.?!]$/) === null && length > 3) {
+    if (inputText.match(/[.?!]$/) === null && length > leastSensibleWords) {
         addInfoMessage(divId, 'alert alert-danger', 'Your last sentence does not end in a fullstop, question or exclamation mark!');
     } else {
         removeInfoMessage(divId);
