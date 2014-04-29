@@ -39,15 +39,15 @@ var removeCommentedOutLines = function(inputText) {
 // checks whether abstract contains multiple paragraphs. If so, gives a warning that they'll be flattened.
 var checkMultipleParagraphs = function(inputText) {
     var divId = 'multipleParagraphs';
-    if (containsMultipleParagraphs(inputText)) {
-        addInfoMessage(divId, 'alert alert-info', 'Your abstract consits of paragraphs. Most say, it should have only one.');
+    if (containsLinebreak(inputText)) {
+        addInfoMessage(divId, 'alert alert-info', 'I see multiple paragraphs, or a linebreak. Most abstracts have just one paragraph. ');
     } else {
         removeInfoMessage(divId);
     }
 };
 
 // Returns true if abstract has multiple paragraphs, false otherwise.
-var containsMultipleParagraphs = function(inputText) {
+var containsLinebreak = function(inputText) {
     inputText = inputText.replace(/[\f\t\v\u00A0\u2028\u2029]/gi, '');
     if (inputText.match(/\s{2,}\S+/g) != null) {
         return true;
@@ -65,8 +65,19 @@ var removeWhitespaces = function(inputText) {
     return inputText;
 };
 
-// Checks the start of the abstract and removes abstract from its beginning.
 var checkAbstractStart = function(inputText) {
+    var divId = 'abstractInfo';
+    inputText = replaceAbstractStart(inputText);
+	if(startsWithAbstract(inputText)) {
+		addInfoMessage(divId, 'alert alert-warning', 'Your abstract begins with the words abstract. I removed them for you.');
+	} else {
+        removeInfoMessage(divId);
+    }
+	return inputText;
+};
+
+// Replaces the start of the abstract and removes abstract from its beginning.
+var replaceAbstractStart = function(inputText) {
     if (startsWithAbstract(inputText)) {
         inputText = inputText.replace(/^abstract(\W)*/i, '');
     }
@@ -75,13 +86,9 @@ var checkAbstractStart = function(inputText) {
 
 // Returns whether the abstract starts with abstract. If so, adds a warning and returns true (false otherwise).
 var startsWithAbstract = function(inputText) {
-    var divId = 'abstractInfo';
     if (inputText.match(/^abstract(\W)*/i) != null) {
-        addInfoMessage(divId, 'alert alert-warning', 'Your abstract begins with the words abstract. I removed them for you.');
         return true;
-    } else {
-        removeInfoMessage(divId);
-    }
+    } 
     return false;
 };
 
