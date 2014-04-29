@@ -52,8 +52,9 @@ var checkMultipleParagraphs = function(inputText) {
 
 // Returns true if abstract has multiple paragraphs, false otherwise.
 var containsLinebreak = function(inputText) {
+	inputText = inputText.replace(/ /gi, '');
     inputText = inputText.replace(/[\f\t\v\u00A0\u2028\u2029]/gi, '');
-    if (inputText.match(/\s{2,}\S+/g) != null) {
+    if (inputText.match(/\s+\S+/g) != null) {
         return true;
     }
     return false;
