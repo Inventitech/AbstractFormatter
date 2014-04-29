@@ -21,6 +21,7 @@ var leastSensibleWords = 10;
 
 // General formatting method calling sub-check functions.
 var formatText = function(inputText) {
+	inputText = removePseudoHTMLTags(inputText);
     inputText = removeCommentedOutLines(inputText);
     checkMultipleParagraphs(inputText);
     inputText = removeWhitespaces(inputText);
@@ -30,10 +31,18 @@ var formatText = function(inputText) {
     checkParagraphEndsCorrectly(inputText, length);
     checkReferences(inputText);
 
-    inputText = checkTeXSyntax(inputText);
+    inputText = checkAndReplaceTeXSyntax(inputText);
 
     return inputText;
 };
+
+// Replace < and > with the HTML equivalent
+var removePseudoHTMLTags = function(inputText) {
+	inputText = inputText.replace(/</gi, '&lt');
+	inputText = inputText.replace(/>/gi, '&gt');
+    return inputText;
+};
+
 
 // Removes lines starting with a % (commented out in latex)
 var removeCommentedOutLines = function(inputText) {
@@ -44,7 +53,7 @@ var removeCommentedOutLines = function(inputText) {
 var checkMultipleParagraphs = function(inputText) {
     var divId = 'multipleParagraphs';
     if (containsLinebreak(inputText)) {
-        addInfoMessage(divId, 'alert alert-info', 'I see multiple paragraphs, or a linebreak. Most abstracts have just one paragraph, so I flattened them. ');
+        addInfoMessage(divId, 'alert alert-warning', 'I see multiple paragraphs, or a linebreak. Most abstracts have just one paragraph! ');
     } else {
         removeInfoMessage(divId);
     }
@@ -54,7 +63,7 @@ var checkMultipleParagraphs = function(inputText) {
 var containsLinebreak = function(inputText) {
 	inputText = inputText.replace(/ /gi, '');
     inputText = inputText.replace(/[\f\t\v\u00A0\u2028\u2029]/gi, '');
-    if (inputText.match(/\s{2,}\S+/g) != null) {
+    if (inputText.match(/\s{2,}\S+/g) != null || inputText.match(/\\\\/g) != null) {
         return true;
     }
     return false;
@@ -66,7 +75,7 @@ var removeWhitespaces = function(inputText) {
     inputText = inputText.replace(/\s/gi, ' ');
     inputText = inputText.replace(/\s+/g, ' ');
     inputText = inputText.replace(/(\w+)- (\w+)/g, '$1$2'); // deals with hyphenation: hy- phen -> hyphen
-    inputText = inputText.replace(/\s+$/, ''); // remove trailing white spaces
+    inputText = inputText.replace(/\s+$/, ''); // removes trailing white spaces
     return inputText;
 };
 
@@ -151,9 +160,18 @@ var containsReferences = function(inputText) {
 };
 
 // Performs some basic TeX replacements
-var checkTeXSyntax = function(inputText) {
-    inputText = inputText.replace(/\\\S+{(.*?)}/gi, '$1'); // replaces TeX commands like \it{Text}
-    inputText = inputText.replace(/{\\\S+(.*?)}/gi, '$1'); // replaces TeX commands like {\em Text}
+var checkAndReplaceTeXSyntax = function(inputText) {
+    var divId = 'latex';
+
+	inputText = checkAndReplaceTeXMath(inputText);
+    var notEquivalentlyTransformedInputText = inputText.replace(/\\\S+{(.*?)}/gi, '$1'); // replaces TeX commands like \it{Text}
+    nonEquivalentTransformedInputText = notEquivalentlyTransformedInputText.replace(/{\\\S+(.*?)}/gi, '$1'); // replaces TeX commands like {\em Text}
+    if(!(notEquivalentlyTransformedInputText === inputText)) {
+        addInfoMessage(divId, 'alert alert-info', 'I removed fancy LaTeX styling. Is the abstract the right place for it?');
+    } else {
+        removeInfoMessage(divId);
+    }
+    inputText = notEquivalentlyTransformedInputText.replace(/\\\\/gi, '<br />'); // forced TeX line break
     inputText = inputText.replace(/\\/gi, '');
     inputText = inputText.replace(/---/g, '&mdash;');
     inputText = inputText.replace(/--/g, '&ndash;');
@@ -161,3 +179,17 @@ var checkTeXSyntax = function(inputText) {
     return inputText;
 };
 
+var checkAndReplaceTeXMath = function(inputText) {
+    var divId = 'checkTexMath';
+
+	inputText = inputText.replace(/\\begin{math}\s*(.*?)\s*\\end{math}/gi, '$1'); // replace math environment to $
+    inputText = inputText.replace(/\$([0-9*+-/><=() ]+?)?\$/gi, '$1'); // trivial math mode replacement: include literally
+    if(inputText.match(/\$.*?\$/gi) != null) {
+        // bad mathmode usage
+        addInfoMessage(divId, 'alert alert-danger', 'Contains complex TeX math. Is the abstract the right place for it?');
+    } else {
+        removeInfoMessage(divId);
+    }
+    
+    return inputText;
+};
