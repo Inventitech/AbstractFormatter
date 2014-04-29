@@ -85,7 +85,13 @@ $('#prepared').hover(
 var addInfoMessage = function(divId, divClasses, message) {
     if($('#' + divId).length === 0) {
     	var insertedDiv = '<div id="' + divId + '" class="' + divClasses + '">' + message + '</div>';
-    	$('#infoMessages').append(insertedDiv);
+    	if(divClasses.indexOf('danger') > -1) {
+    		$('#dangerMessages').append(insertedDiv);
+    	} else if(divClasses.indexOf('warning') > -1) {
+    		$('#warningMessages').append(insertedDiv);
+    	} else {
+    		$('#infoMessages').append(insertedDiv);
+    	}
     }
 };
 
