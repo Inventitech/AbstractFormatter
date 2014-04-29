@@ -13,6 +13,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
+// This file provides the main abstract formatting support.
 
 // General formatting method calling sub-check functions.
 var formatText = function(inputText) {
@@ -30,7 +31,7 @@ var formatText = function(inputText) {
     return inputText;
 };
 
-// Removes lines commented out using % in latex
+// Removes lines starting with a % (commented out in latex)
 var removeCommentedOutLines = function(inputText) {
     return inputText.replace(/^%.*$/mg, '');
 };
@@ -39,7 +40,7 @@ var removeCommentedOutLines = function(inputText) {
 var checkMultipleParagraphs = function(inputText) {
     var divId = 'multipleParagraphs';
     if (containsMultipleParagraphs(inputText)) {
-        addInfoMessage(divId, 'alert alert-info', 'It appears to me, your abstract contains multiple paragraphs. I flattened them.');
+        addInfoMessage(divId, 'alert alert-info', 'Your abstract consits of paragraphs. Most say, it should have only one.');
     } else {
         removeInfoMessage(divId);
     }
@@ -80,8 +81,8 @@ var startsWithAbstract = function(inputText) {
         return true;
     } else {
         removeInfoMessage(divId);
-        return false;
     }
+    return false;
 };
 
 // Checks and returns the number of words in the abstract.
@@ -127,11 +128,12 @@ var checkReferences = function(inputText) {
     }
 };
 
-// Returns true if the abstract contains references such as [5]
+// Returns true if the abstract contains references such as [5], or even [5, 55]
 var containsReferences = function(inputText) {
-    if (inputText.match(/\[(.*)?\d(.*)?\]/g) != null) {
+    if (inputText.match(/\[((\w)*\d(\w*)?)(, (\w)*\d(\w*)?)*\]/g) != null) {
         return true;
     }
+    return false;
 };
 
 // Performs some basic TeX replacements
@@ -144,7 +146,4 @@ var checkTeXSyntax = function(inputText) {
 
     return inputText;
 };
-
-
-
 

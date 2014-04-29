@@ -1,4 +1,19 @@
-// helper functions that deal with the HTML
+/*  Copyright (C) 2014  Moritz Beller
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+
+// This files contains helper functions that deal with the HTML.
 
 // global html setup
 // activate auto-resizing of textarea
@@ -15,12 +30,12 @@ var refreshPreparedAbstract = function() {
     var inputText = $('#abstractTextarea').val();
     var processedText = formatText(inputText);
     $('#formattedAbstract').html(processedText);
-}
+};
 
 var clearAbstract = function() {
     $('#abstractTextarea').val('').trigger('autosize.resize'); 
     $('#formattedAbstract').text('Your formatted abstract from the PDF!');
-}
+};
 
 // Function for dynamic dispatching of toggle text
 collapsed = true;
@@ -32,7 +47,7 @@ var toggleCollapse = function() {
     else {
 	$('#collapseButton').html('&laquo; Learn less');
     }
-}
+};
 
 
 // The following is used for the selection/hover effect of the prepared abstract
@@ -62,9 +77,9 @@ $(function() {
 });
 
 $('#prepared').hover(
-       function(){ $('#formattedAbstract').addClass('active') },
-       function(){ $('#formattedAbstract').removeClass('active') }
-)
+       function(){ $('#formattedAbstract').addClass('active'); },
+       function(){ $('#formattedAbstract').removeClass('active'); }
+);
 
 
 
@@ -74,10 +89,10 @@ var addInfoMessage = function(divId, divClasses, message) {
 	var insertedDiv = '<div id="' + divId + '" class="' + divClasses + '">' + message + '</div>';
 	$('#infoMessages').append(insertedDiv);
     }
-}
+};
 
 // removes warning 
 var removeInfoMessage = function(divId) {
     $('#' + divId).remove();
-}
+};
 
