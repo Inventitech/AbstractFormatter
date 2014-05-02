@@ -17,8 +17,8 @@
 
 // global html setup
 // activate auto-resizing of textarea
-$(document).ready(function(){
-    $('#abstractTextarea').autosize();   
+$(document).ready(function() {
+    $('#abstractTextarea').autosize();
 });
 
 // refreshes Abstract on textarea change
@@ -33,7 +33,7 @@ var refreshPreparedAbstract = function() {
 };
 
 var clearAbstract = function() {
-    $('#abstractTextarea').val('').trigger('autosize.resize'); 
+    $('#abstractTextarea').val('').trigger('autosize.resize');
     refreshPreparedAbstract();
     $('#formattedAbstract').text('Your formatted abstract from the PDF or LaTeX source!');
 };
@@ -42,7 +42,7 @@ var clearAbstract = function() {
 collapsed = true;
 var toggleCollapse = function() {
     collapsed = !collapsed;
-    if(collapsed === true) {
+    if (collapsed === true) {
     	$('#collapseButton').html('Learn more &raquo;');
     } else {
     	$('#collapseButton').html('&laquo; Learn less');
@@ -52,17 +52,17 @@ var toggleCollapse = function() {
 
 // The following is used for the selection/hover effect of the prepared abstract
 // this function is copied from stackOverFlow (http://jsfiddle.net/edelman/KcX6A/1506/)
-jQuery.fn.selectText = function(){
+jQuery.fn.selectText = function() {
     var doc = document
-        , element = this[0]
-        , range, selection
-    ;
+, element = this[0]
+        , range, selection;
+
     if (doc.body.createTextRange) {
         range = document.body.createTextRange();
         range.moveToElementText(element);
         range.select();
     } else if (window.getSelection) {
-        selection = window.getSelection();        
+        selection = window.getSelection();
         range = document.createRange();
         range.selectNodeContents(element);
         selection.removeAllRanges();
@@ -77,17 +77,17 @@ $(function() {
 });
 
 $('#prepared').hover(
-       function(){ $('#formattedAbstract').addClass('active'); },
-       function(){ $('#formattedAbstract').removeClass('active'); }
+       function() { $('#formattedAbstract').addClass('active'); },
+       function() { $('#formattedAbstract').removeClass('active'); }
 );
 
 // Adds a generic info message in the infoMessages div in the HTML
 var addInfoMessage = function(divId, divClasses, message) {
-    if($('#' + divId).length === 0) {
+    if ($('#' + divId).length === 0) {
     	var insertedDiv = '<div id="' + divId + '" class="' + divClasses + '">' + message + '</div>';
-    	if(divClasses.indexOf('danger') > -1) {
+    	if (divClasses.indexOf('danger') > -1) {
     		$('#dangerMessages').append(insertedDiv);
-    	} else if(divClasses.indexOf('warning') > -1) {
+    	} else if (divClasses.indexOf('warning') > -1) {
     		$('#warningMessages').append(insertedDiv);
     	} else {
     		$('#infoMessages').append(insertedDiv);
@@ -95,7 +95,7 @@ var addInfoMessage = function(divId, divClasses, message) {
     }
 };
 
-// removes warning 
+// removes warning
 var removeInfoMessage = function(divId) {
     $('#' + divId).remove();
 };

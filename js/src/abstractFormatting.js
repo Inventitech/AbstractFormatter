@@ -82,7 +82,7 @@ var removeWhitespaces = function(inputText) {
 var checkAbstractStart = function(inputText) {
     var divId = 'abstractInfo';
     inputText = replaceAbstractStart(inputText);
-	if(startsWithAbstract(inputText)) {
+	if (startsWithAbstract(inputText)) {
 		addInfoMessage(divId, 'alert alert-warning', 'Your abstract begins with the words abstract. I removed them for you.');
 	} else {
         removeInfoMessage(divId);
@@ -102,7 +102,7 @@ var replaceAbstractStart = function(inputText) {
 var startsWithAbstract = function(inputText) {
     if (inputText.match(/^abstract(\W)*/i) != null) {
         return true;
-    } 
+    }
     return false;
 };
 
@@ -166,7 +166,7 @@ var checkAndReplaceTeXSyntax = function(inputText) {
 	inputText = checkAndReplaceTeXMath(inputText);
     var notEquivalentlyTransformedInputText = inputText.replace(/\\\S+{(.*?)}/gi, '$1'); // replaces TeX commands like \it{Text}
     nonEquivalentTransformedInputText = notEquivalentlyTransformedInputText.replace(/{\\\S+(.*?)}/gi, '$1'); // replaces TeX commands like {\em Text}
-    if(!(notEquivalentlyTransformedInputText === inputText)) {
+    if (!(notEquivalentlyTransformedInputText === inputText)) {
         addInfoMessage(divId, 'alert alert-info', 'I removed fancy LaTeX styling. Is the abstract the right place for it?');
     } else {
         removeInfoMessage(divId);
@@ -184,12 +184,12 @@ var checkAndReplaceTeXMath = function(inputText) {
 
 	inputText = inputText.replace(/\\begin{math}\s*(.*?)\s*\\end{math}/gi, '$1'); // replace math environment to $
     inputText = inputText.replace(/\$([0-9*+-/><=() ]+?)?\$/gi, '$1'); // trivial math mode replacement: include literally
-    if(inputText.match(/\$.*?\$/gi) != null) {
+    if (inputText.match(/\$.*?\$/gi) != null) {
         // bad mathmode usage
         addInfoMessage(divId, 'alert alert-danger', 'Contains complex TeX math. Is the abstract the right place for it?');
     } else {
         removeInfoMessage(divId);
     }
-    
+
     return inputText;
 };
