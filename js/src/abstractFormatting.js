@@ -49,7 +49,7 @@ var removeCommentedOutLines = function(inputText) {
     // Comment at beginning of line
     inputText = inputText.replace(/^[\t ]*%.*[\n]?/mg, '');
     // At the end of line, starting somewhere in the middle of the line
-    return inputText.replace(/[\t ]*%.*?$/mg, '');
+    return inputText.replace(/[\t ]+%.*?$/mg, '');
 };
 
 // checks whether abstract contains multiple paragraphs. If so, gives a warning that they'll be flattened.

@@ -52,6 +52,8 @@ test('TeX Comments', function() {
 	equal(removeCommentedOutLines('First line\n% this is a comment'), 'First line\n', 'Second line comment replacement');
 	equal(removeCommentedOutLines('% this is a comment'), '', 'Only comment replacement');
 	equal(removeCommentedOutLines('First line % this is a comment\nNext line!'), 'First line\nNext line!', 'In line comment replacement');
+	equal(removeCommentedOutLines('First line with 5% sign! % this is a comment\nNext line!'), 'First line with 5% sign!\nNext line!', 'In line comment replacement with 5% mark');
+	equal(removeCommentedOutLines('First line with 5\% sign! % this is a comment\nNext line!'), 'First line with 5% sign!\nNext line!', 'In line comment replacement with 5% tex mark');
 });
 
 test('TeX Syntax', function() {
