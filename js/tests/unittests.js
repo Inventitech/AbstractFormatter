@@ -1,3 +1,5 @@
+module( "Unit tests" );
+
 test('Contain References', function() {
 	equal(containsReferences('This does not contain a reference.'), false, 'Should not detect a reference.');
 	equal(containsReferences('This does not contain a proper [44 reference.'), false, 'Should not detect a reference.');
@@ -61,3 +63,4 @@ test('Tex Math Replacement', function() {
 	equal(checkAndReplaceTeXMath('$\\leftarrow$'), '$\\leftarrow$', 'No math mode replacement.');
 
 });
+
