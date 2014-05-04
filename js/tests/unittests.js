@@ -45,6 +45,15 @@ var removeInfoMessage = function() {
 	result = true;
 };
 
+test('TeX Comments', function() {
+	equal(removeCommentedOutLines('% this is a comment \nSecond Line'), 'Second Line', 'First line comment replacement');
+	equal(removeCommentedOutLines('First line\n% this is a comment \nSecond Line'), 'First line\nSecond Line', 'Middle comment replacement');
+	equal(removeCommentedOutLines('First line\n% this is a comment \n % another comment \nSecond Line'), 'First line\nSecond Line', 'Middle double comment replacement');
+	equal(removeCommentedOutLines('First line\n% this is a comment'), 'First line\n', 'Second line comment replacement');
+	equal(removeCommentedOutLines('% this is a comment'), '', 'Only comment replacement');
+	equal(removeCommentedOutLines('First line % this is a comment\nNext line!'), 'First line\nNext line!', 'In line comment replacement');
+});
+
 test('TeX Syntax', function() {
 	equal(checkAndReplaceTeXSyntax('aijsfisjafdjfoi \\textbf{aaa} sfd'), 'aijsfisjafdjfoi aaa sfd', '');
 	equal(checkAndReplaceTeXSyntax('An en-Dash--My dash'), 'An en-Dash&ndash;My dash', 'Straight-forward en-dash replacement');
