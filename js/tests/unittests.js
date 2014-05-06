@@ -52,6 +52,8 @@ test('TeX Syntax', function() {
 	equal(checkAndReplaceTeXSyntax('An en-Dash--My dash'), 'An en-Dash&ndash;My dash', 'Straight-forward en-dash replacement');
 	equal(checkAndReplaceTeXSyntax('An em-Dash---My dash'), 'An em-Dash&mdash;My dash', 'Straight-forward em-dash replacement');
 	equal(checkAndReplaceTeXSyntax('Five percent (5\\%)'), 'Five percent (5%)', 'Straight-forward % replacement');
+        equal(checkAndReplaceTeXSyntax('Hello,~Lars! Thanks for reporting this feature request!'), 'Hello, Lars! Thanks for reporting this feature request!', 'FR');
+    equal(checkAndReplaceTeXSyntax('That means ~5cm in diameter.'), 'That means ~5cm in diameter.');
 });
 
 test('Tex Math Replacement', function() {
@@ -61,6 +63,7 @@ test('Tex Math Replacement', function() {
 	equal(checkAndReplaceTeXMath('\\begin{math}5+5-2+3=11\\end{math}'), '5+5-2+3=11', 'math environment equivalent');
 	equal(checkAndReplaceTeXMath('$5+5=\n10$'), '$5+5=\n10$', 'No math mode replacement.');
 	equal(checkAndReplaceTeXMath('$\\leftarrow$'), '$\\leftarrow$', 'No math mode replacement.');
-
 });
+
+
 

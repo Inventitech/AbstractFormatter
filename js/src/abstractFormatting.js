@@ -175,6 +175,7 @@ var checkAndReplaceTeXSyntax = function(inputText) {
     inputText = inputText.replace(/\\/gi, '');
     inputText = inputText.replace(/---/g, '&mdash;');
     inputText = inputText.replace(/--/g, '&ndash;');
+    inputText = inputText.replace(/(\S)~(\S)/g, '$1 $2'); // replace bound-together blanks by actual blanks
 
     return inputText;
 };
