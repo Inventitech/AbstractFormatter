@@ -44,9 +44,24 @@ var removePseudoHTMLTags = function(inputText) {
 };
 
 
-// Removes lines starting with a % (commented out in latex)
+/**
+ * Removes any text after a % (commented out in latex)
+ * @param {string} inputText - The input text from which to remove comments
+ * @return {string} The text free of comments
+ */
 var removeCommentedOutLines = function(inputText) {
-    return inputText.replace(/^%.*$/mg, '');
+    // Comment at beginning of line
+    var commentFreeText = inputText.replace(/^[\t ]*%.*[\n]?/mg, '');
+    // At the end of line, starting somewhere in the middle of the line
+    commentFreeText = commentFreeText.replace(/[\t ]+%.*?$/mg, '');
+    var divId = "commented-lines";
+	if (commentFreeText !== inputText) {
+		addInfoMessage(divId, 'alert alert-info', 'Removed some latex comments from your abstract.');
+	} else {
+        removeInfoMessage(divId);
+    }
+
+    return commentFreeText;
 };
 
 // checks whether abstract contains multiple paragraphs. If so, gives a warning that they'll be flattened.
