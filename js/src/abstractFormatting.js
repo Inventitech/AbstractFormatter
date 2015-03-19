@@ -191,6 +191,8 @@ var checkAndReplaceTeXSyntax = function(inputText) {
     inputText = inputText.replace(/---/g, '&mdash;');
     inputText = inputText.replace(/--/g, '&ndash;');
     inputText = inputText.replace(/(\S)~(\S)/g, '$1 $2'); // replace bound-together blanks by actual blanks
+    inputText = inputText.replace(/``(.*?)''/g, '&ldquo;$1&rdquo;'); // Double English quotes
+    inputText = inputText.replace(/`(.*?)'/g, '&lsquo;$1&rsquo;'); // Single English quotes
 
     return inputText;
 };

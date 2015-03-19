@@ -64,7 +64,10 @@ test('TeX Syntax', function() {
 	equal(checkAndReplaceTeXSyntax('An em-Dash---My dash'), 'An em-Dash&mdash;My dash', 'Straight-forward em-dash replacement');
 	equal(checkAndReplaceTeXSyntax('Five percent (5\\%)'), 'Five percent (5%)', 'Straight-forward % replacement');
         equal(checkAndReplaceTeXSyntax('Hello,~Lars! Thanks for reporting this feature request!'), 'Hello, Lars! Thanks for reporting this feature request!', 'FR');
-    equal(checkAndReplaceTeXSyntax('That means ~5cm in diameter.'), 'That means ~5cm in diameter.');
+    	equal(checkAndReplaceTeXSyntax('That means ~5cm in diameter.'), 'That means ~5cm in diameter.');
+    	equal(checkAndReplaceTeXSyntax('Latex-English `Single\' Quotes'), 'Latex-English &lsquo;Single&rsquo; Quotes');
+    	equal(checkAndReplaceTeXSyntax('Latex-English ``Double\'\' Quotes'), 'Latex-English &ldquo;Double&rdquo; Quotes');
+    	equal(checkAndReplaceTeXSyntax('Latex-English ``Double\'s Quotes\'\' bla ``Double Quotes\'\''), 'Latex-English &ldquo;Double\'s Quotes&rdquo; bla &ldquo;Double Quotes&rdquo;');
 });
 
 test('Tex Math Replacement', function() {
@@ -75,6 +78,4 @@ test('Tex Math Replacement', function() {
 	equal(checkAndReplaceTeXMath('$5+5=\n10$'), '$5+5=\n10$', 'No math mode replacement.');
 	equal(checkAndReplaceTeXMath('$\\leftarrow$'), '$\\leftarrow$', 'No math mode replacement.');
 });
-
-
 
