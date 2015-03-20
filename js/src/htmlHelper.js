@@ -81,9 +81,10 @@ $('#prepared').hover(
        function() { $('#formattedAbstract').removeClass('active'); }
 );
 
-// Adds a generic info message in the infoMessages div in the HTML
+// Adds a generic info message in the infoMessages div in the HTML. Returns the number of instances.
 var addInfoMessage = function(divId, divClasses, message) {
-    if ($('#' + divId).length === 0) {
+    var numberOfInfoMessages = $('#' + divId).length;
+    if (numberOfInfoMessages === 0) {
     	var insertedDiv = '<div id="' + divId + '" class="' + divClasses + '">' + message + '</div>';
     	if (divClasses.indexOf('danger') > -1) {
     		$('#dangerMessages').append(insertedDiv);
@@ -93,6 +94,7 @@ var addInfoMessage = function(divId, divClasses, message) {
     		$('#infoMessages').append(insertedDiv);
     	}
     }
+    return numberOfInfoMessages;
 };
 
 // removes warning

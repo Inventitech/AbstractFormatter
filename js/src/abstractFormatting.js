@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014  Moritz Beller
+/*  Copyright (C) 2014, 2015  Moritz Beller
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,13 +15,15 @@
 
 // This file provides the main abstract formatting support.
 
-// Everything else is just a toy input, really.
+// least sensible length for an abstract. Everything else is just a toy input.
 var leastSensibleWords = 10;
 
+// Whether to flatten paragraphs. Default is true.
+var flattenParagraphs = true; 
 
 // General formatting method calling sub-check functions.
 var formatText = function(inputText) {
-	inputText = removePseudoHTMLTags(inputText);
+    inputText = removePseudoHTMLTags(inputText);
     inputText = removeCommentedOutLines(inputText);
     checkMultipleParagraphs(inputText);
     inputText = removeWhitespaces(inputText);
@@ -68,7 +70,13 @@ var removeCommentedOutLines = function(inputText) {
 var checkMultipleParagraphs = function(inputText) {
     var divId = 'multipleParagraphs';
     if (containsLinebreak(inputText)) {
-        addInfoMessage(divId, 'alert alert-warning', 'I see multiple paragraphs, or a linebreak. Most abstracts have just one paragraph! ');
+        var messageAdded = addInfoMessage(divId, 'alert alert-warning', 'Most abstracts have just one paragraph! <a href="#" id="unflatten">Un-Flatten?</a>');
+	if(messageAdded === 0) {
+	    $('#unflatten').click(function() {
+		flattenParagraphs = !flattenParagraphs;
+		refreshPreparedAbstract();
+	    });
+	}
     } else {
         removeInfoMessage(divId);
     }
@@ -76,7 +84,7 @@ var checkMultipleParagraphs = function(inputText) {
 
 // Returns true if abstract has multiple paragraphs, false otherwise.
 var containsLinebreak = function(inputText) {
-	inputText = inputText.replace(/ /gi, '');
+    inputText = inputText.replace(/ /gi, '');
     inputText = inputText.replace(/[\f\t\v\u00A0\u2028\u2029]/gi, '');
     if (inputText.match(/\s{2,}\S+/g) != null || inputText.match(/\\\\/g) != null) {
         return true;
@@ -86,6 +94,9 @@ var containsLinebreak = function(inputText) {
 
 // Removes all whitespaces in the abstract.
 var removeWhitespaces = function(inputText) {
+    if(!flattenParagraphs) {
+	inputText = inputText.replace(/(.*?)\n\n/gi, '<p>$1</p>');
+    }
     // White-space replacements
     inputText = inputText.replace(/\s/gi, ' ');
     inputText = inputText.replace(/\s+/g, ' ');
@@ -178,7 +189,7 @@ var containsReferences = function(inputText) {
 var checkAndReplaceTeXSyntax = function(inputText) {
     var divId = 'latex';
 
-	inputText = checkAndReplaceTeXMath(inputText);
+    inputText = checkAndReplaceTeXMath(inputText);
     var notEquivalentlyTransformedInputText = inputText.replace(/\\\S+{(.*?)}/gi, '$1'); // replaces TeX commands like \it{Text}
     nonEquivalentTransformedInputText = notEquivalentlyTransformedInputText.replace(/{\\\S+(.*?)}/gi, '$1'); // replaces TeX commands like {\em Text}
     if (!(notEquivalentlyTransformedInputText === inputText)) {
@@ -192,7 +203,7 @@ var checkAndReplaceTeXSyntax = function(inputText) {
     inputText = inputText.replace(/--/g, '&ndash;');
     inputText = inputText.replace(/(\S)~(\S)/g, '$1 $2'); // replace bound-together blanks by actual blanks
     inputText = inputText.replace(/``(.*?)''/g, '&ldquo;$1&rdquo;'); // Double English quotes
-    inputText = inputText.replace(/`(.*?)'/g, '&lsquo;$1&rsquo;'); // Single English quotes
+    inputText = inputText.replace(/`(.*?)'/g, '&lsquo;$1&rsquo;'); // Single English  quotes
 
     return inputText;
 };
@@ -200,7 +211,7 @@ var checkAndReplaceTeXSyntax = function(inputText) {
 var checkAndReplaceTeXMath = function(inputText) {
     var divId = 'checkTexMath';
 
-	inputText = inputText.replace(/\\begin{math}\s*(.*?)\s*\\end{math}/gi, '$1'); // replace math environment to $
+    inputText = inputText.replace(/\\begin{math}\s*(.*?)\s*\\end{math}/gi, '$1'); // replace math environment to $
     inputText = inputText.replace(/\$([0-9*+-/><=() ]+?)?\$/gi, '$1'); // trivial math mode replacement: include literally
     if (inputText.match(/\$.*?\$/gi) != null) {
         // bad mathmode usage
