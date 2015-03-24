@@ -95,13 +95,14 @@ var containsLinebreak = function(inputText) {
 // Removes all whitespaces in the abstract.
 var removeWhitespaces = function(inputText) {
     if(!flattenParagraphs) {
-	inputText = inputText.replace(/(.*?)\n\n/gi, '<p>$1</p>');
+	inputText = inputText.replace(/(.+?)\n\n/gi, '<p>$1</p>');
     }
     // White-space replacements
     inputText = inputText.replace(/\s/gi, ' ');
     inputText = inputText.replace(/\s+/g, ' ');
     inputText = inputText.replace(/(\w+)- (\w+)/g, '$1$2'); // deals with hyphenation: hy- phen -> hyphen
-    inputText = inputText.replace(/\s+$/, ''); // removes trailing white spaces
+    inputText = inputText.replace(/^\s+/, ''); // removes leading whitespaces
+    inputText = inputText.replace(/\s+$/, ''); // removes trailing whitespaces
     return inputText;
 };
 
@@ -119,7 +120,8 @@ var checkAbstractStart = function(inputText) {
 // Replaces the start of the abstract and removes abstract from its beginning.
 var replaceAbstractStart = function(inputText) {
     if (startsWithAbstract(inputText)) {
-        inputText = inputText.replace(/^abstract(\W)*/i, '');
+	inputText = inputText.replace(/^abstract(\W)*/i, '');
+	inputText = inputText.replace(/^p>/, '<p>'); // fix possibly broken p tag after removing abstract.	
     }
     return inputText;
 };

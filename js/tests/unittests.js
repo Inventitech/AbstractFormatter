@@ -58,6 +58,16 @@ test('TeX Comments', function() {
 	equal(removeCommentedOutLines('First line with 5\\% sign! % this is a comment\nNext line!'), 'First line with 5\\% sign!\nNext line!', 'In line comment replacement with 5\\% tex mark');
 });
 
+test('TeX Paragraphing', function() {
+	flattenParagraphs = false;
+	equal(removeWhitespaces('\n\nParagraph\n\nbla'), '<p>Paragraph</p>bla', 'Beginning paragraphs');
+	equal(removeWhitespaces('\n\nParagraph\n\n'), '<p>Paragraph</p>', 'Ending paragraphs');
+	equal(removeWhitespaces('\n\nParagraph\n\n\n\n'), '<p>Paragraph</p>', 'No empty paragraphs');
+	flattenParagraphs = true;
+	equal(removeWhitespaces('\n\nParagraph'), 'Paragraph', 'Flat no empty paragraphs');
+});
+
+
 test('TeX Syntax', function() {
 	equal(checkAndReplaceTeXSyntax('aijsfisjafdjfoi \\textbf{aaa} sfd'), 'aijsfisjafdjfoi aaa sfd', '');
 	equal(checkAndReplaceTeXSyntax('An en-Dash--My dash'), 'An en-Dash&ndash;My dash', 'Straight-forward en-dash replacement');
