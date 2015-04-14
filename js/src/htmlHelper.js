@@ -49,6 +49,34 @@ var toggleCollapse = function() {
     }
 };
 
+// Get HTML parameters 
+// this function is copied from http://stackoverflow.com/questions/19491336/get-url-parameter-jquery
+function getUrlParameter(sParam)
+{
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++) 
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam) 
+        {
+            return sParameterName[1];
+        }
+    }
+}          
+
+// auto-sets the raw text
+// so that others can call the AbstractFormatter directly
+function formatAbstractFromURL() 
+{
+    var suppliedText = decodeURI(getUrlParameter('abstract'));
+    if(suppliedText) 
+    {
+    	$('#abstractTextarea').val(suppliedText);
+	refreshPreparedAbstract();
+    }
+}
+
 // Used for the selection/hover effect of the prepared abstract
 // this function is copied from http://jsfiddle.net/edelman/KcX6A/1506/
 jQuery.fn.selectText = function() {
@@ -74,6 +102,7 @@ $(function() {
     $('#prepared').click(function() {
         $('#formattedAbstract').selectText();
     });
+    formatAbstractFromURL();
 });
 
 $('#prepared').hover(
