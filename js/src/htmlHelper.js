@@ -49,9 +49,8 @@ var toggleCollapse = function() {
     }
 };
 
-
-// The following is used for the selection/hover effect of the prepared abstract
-// this function is copied from stackOverFlow (http://jsfiddle.net/edelman/KcX6A/1506/)
+// Used for the selection/hover effect of the prepared abstract
+// this function is copied from http://jsfiddle.net/edelman/KcX6A/1506/
 jQuery.fn.selectText = function() {
     var doc = document
 , element = this[0]
@@ -70,6 +69,7 @@ jQuery.fn.selectText = function() {
     }
 };
 
+// called when JS is initialized
 $(function() {
     $('#prepared').click(function() {
         $('#formattedAbstract').selectText();
