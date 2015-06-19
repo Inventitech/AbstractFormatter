@@ -1,6 +1,11 @@
+# Save as .codeclimate.yml (note leading .) in project root directory
 languages:
-	Ruby: true
-exclude_path:
-	- css/*
-	- fonts/*
-	- js/libs*
+  Ruby: false
+  JavaScript: true
+  PHP: false
+  Python: false
+exclude_paths:
+ - "css/*"
+ - "fonts/*"
+ - "js/libs*"
+
