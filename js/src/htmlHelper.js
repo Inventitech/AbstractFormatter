@@ -70,7 +70,7 @@ function getUrlParameter(sParam)
 function formatAbstractFromURL() 
 {
     var suppliedText = decodeURI(getUrlParameter('abstract'));
-    if(suppliedText) 
+    if(suppliedText && suppliedText != 'undefined') 
     {
     	$('#abstractTextarea').val(suppliedText);
 	refreshPreparedAbstract();
