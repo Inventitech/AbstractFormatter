@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014, 2015  Moritz Beller
+﻿/*  Copyright (C) 2014, 2015  Moritz Beller
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ var flattenParagraphs = true;
 
 // General formatting method calling sub-check functions.
 var formatText = function(inputText) {
+    inputText = removeLigatures(inputText);
     inputText = removePseudoHTMLTags(inputText);
     inputText = removeCommentedOutLines(inputText);
     checkMultipleParagraphs(inputText);
@@ -31,12 +32,23 @@ var formatText = function(inputText) {
     inputText = checkAbstractStart(inputText);
     var length = checkLength(inputText);
     checkParagraphEndsCorrectly(inputText, length);
+    checkNoInvalidQuestionMarks(inputText, length);
     checkReferences(inputText);
 
     inputText = checkAndReplaceTeXSyntax(inputText);
 
     return inputText;
 };
+
+// Replace ligatures with equivalent standard characters
+var removeLigatures = function(inputText) {
+    inputText = inputText.replace(//gi, 'fl');
+    inputText = inputText.replace(//gi, 'ff');
+    inputText = inputText.replace(//gi, 'fi');
+    inputText = inputText.replace(//gi, 'ffi');
+    return inputText;
+};
+
 
 // Replace < and > with the HTML equivalent
 var removePseudoHTMLTags = function(inputText) {
@@ -164,6 +176,17 @@ var checkParagraphEndsCorrectly = function(inputText, length) {
     var divId = 'paragraphEnd';
     if (inputText.match(/[.?!]$/) === null && length > leastSensibleWords) {
         addInfoMessage(divId, 'alert alert-danger', 'Your last sentence does not end in a fullstop, question or exclamation mark!');
+    } else {
+        removeInfoMessage(divId);
+    }
+};
+
+
+// Checks whether the abstract contains no question marks at the beginning or middle of a word.
+var checkNoInvalidQuestionMarks = function(inputText, length) {
+    var divId = 'invalidQuestionMarks';
+    if ((inputText.match(/[A-Za-z]\?[a-z]/) !== null || inputText.match(/\ \?/) !== null) && length > leastSensibleWords) {
+        addInfoMessage(divId, 'alert alert-danger', 'Your abstract contains a question mark in an unexpected place.');
     } else {
         removeInfoMessage(divId);
     }
