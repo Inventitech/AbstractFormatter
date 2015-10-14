@@ -1,5 +1,9 @@
 module( "Unit tests" );
 
+test('Ligature replacement', function() {
+	equal(removeLigatures('This contains a  ligature.'), 'This contains a fi ligature.', 'Should replace a ligature character.');
+});
+
 test('Contain References', function() {
 	equal(containsReferences('This does not contain a reference.'), false, 'Should not detect a reference.');
 	equal(containsReferences('This does not contain a proper [44 reference.'), false, 'Should not detect a reference.');
