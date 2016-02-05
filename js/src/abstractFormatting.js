@@ -22,7 +22,7 @@ var leastSensibleWords = 10;
 var flattenParagraphs = true; 
 
 // Invisible, correct UTF marker char at begin and end of document
-var utfSpecialMarker = 'PMARKER';
+var utfSpecialMarker = '\ufddf';
 
 // General formatting method calling sub-check functions.
 var formatText = function(inputText) {
@@ -283,7 +283,7 @@ var checkAndReplaceTeXMath = function(inputText) {
     }
     else if (previousText.match(/\$.*\^.*\$/gi) != null) {
         // bad mathmode usage
-        addInfoMessage(divId, 'alert alert-danger', 'Contains an exponent. Publishers do not like this! I introduced a circumflex for you.');
+        addInfoMessage(divId, 'alert alert-info', 'Contains an exponent. Publishers do not like this, so I replaced it with a circumflex for you.');
     } 
     else {
         removeInfoMessage(divId);
