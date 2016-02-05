@@ -29,6 +29,7 @@ test('Wordbreakage correct', function() {
 	equal(removeWhitespaces('This is a bro-\nken word.'), 'This is a broken word.', 'Word should be wrapped.');
 	equal(removeWhitespaces('This is another bro--\nken word.'), 'This is another bro-- ken word.', 'Word should be wrapped.');
 	equal(removeWhitespaces('This is the first-\n and second item.'), 'This is the first- and second item.', 'Word should not be wrapped.');
+	equal(removeWhitespaces('This is the first-\n android second item.'), 'This is the firstandroid second item.', 'Word should be wrapped.');
 });
 
 test('Starts with Abstract', function() {

@@ -133,7 +133,8 @@ var removeWhitespaces = function(inputText) {
 	inputText = inputText.replace(new RegExp(utfSpecialMarker,"gi"), '');
     }
 
-    inputText = inputText.replace(/(\w+)-\nand/g, '$1- and'); // deals with hyphenation: hyphen- and -> hyphen and
+    inputText = inputText.replace(/(\w+)-\nand /g, '$1- and '); // deals with hyphenation: hyphen- and -> hyphen and
+    inputText = inputText.replace(/(\w+)-\nund /g, '$1- und '); // deals with hyphenation: hyphen- and -> hyphen and
     inputText = inputText.replace(/(\w+)-\n(\w+)/g, '$1$2'); // deals with hyphenation: hy-- phen -> hyphen
 
 
