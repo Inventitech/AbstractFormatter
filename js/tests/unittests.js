@@ -1,5 +1,14 @@
 module( "Unit tests" );
 
+// redefinition of called helper functions to testing purposes.
+var result;
+var addInfoMessage = function() {
+	result = false;
+};
+var removeInfoMessage = function() {
+	result = true;
+};
+
 test('Ligature replacement', function() {
 	equal(removeLigatures('This contains a  ligature.'), 'This contains a fi ligature.', 'Should replace a ligature character.');
 });
@@ -41,22 +50,15 @@ test('Starts with Abstract', function() {
 test('Paragraph ends correctly', function() {
 	checkParagraphEndsCorrectly('This ends properly or.');
 	equal(result, true, 'Ends correctly');
-	checkParagraphEndsCorrectly('This ends properly or!!');
+	checkParagraphEndsCorrectly('This ends properly or!!',15);
 	equal(result, true, 'Ends correctly');
-	checkParagraphEndsCorrectly('This ends properly or!?');
+	checkParagraphEndsCorrectly('This ends properly or!?',15);
 	equal(result, true, 'Ends correctly');
-	checkParagraphEndsCorrectly('This ends properly not');
-	equal(result, true, 'Missing period');
+	checkParagraphEndsCorrectly('and researchers; they come from various\ndomains such as software development companies,\nconsulting companies, service providers, and\nfinancial institutions\n',15);
+	equal(result, false, 'Ends correctly');
+	checkParagraphEndsCorrectly('This ends properly not',15);
+	equal(result, false, 'Missing period');
 });
-
-// redefinition of called helper functions to testing purposes.
-var result;
-var addInfoMessage = function() {
-	result = false;
-};
-var removeInfoMessage = function() {
-	result = true;
-};
 
 test('TeX Comments', function() {
 	equal(removeCommentedOutLines('% this is a comment \nSecond Line'), 'Second Line', 'First line comment replacement');
