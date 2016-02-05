@@ -95,6 +95,10 @@ test('Tex Math Replacement', function() {
 	equal(checkAndReplaceTeXMath('\\begin{math}\n5+5-2+3=11\n\\end{math}'), '5+5-2+3=11', 'math environment equivalent');
 	equal(checkAndReplaceTeXMath('\\begin{math}\n  5+5-2+3=11\n  \\end{math}'), '5+5-2+3=11', 'math environment equivalent');
 	equal(checkAndReplaceTeXMath('\\begin{math}5+5-2+3=11\\end{math}'), '5+5-2+3=11', 'math environment equivalent');
+	equal(checkAndReplaceTeXMath('$5^5$'), '5^5', 'Exponent Math mode translation.');
+	equal(checkAndReplaceTeXMath('Two formulae: $10^5$ and $20^5$'), 'Two formulae: 10^5 and 20^5', 'Exponent Math mode translation.');
+	equal(checkAndReplaceTeXMath('$5\\cdot5$'), '5*5', 'Multiplication Math mode translation.');
+	equal(checkAndReplaceTeXMath('$5\\times5$'), '5x5', 'Multiplication Math mode translation.');
 	equal(checkAndReplaceTeXMath('$5+5=\n10$'), '$5+5=\n10$', 'No math mode replacement.');
 	equal(checkAndReplaceTeXMath('$\\leftarrow$'), '$\\leftarrow$', 'No math mode replacement.');
 });

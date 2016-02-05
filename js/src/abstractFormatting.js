@@ -270,13 +270,21 @@ var checkAndReplaceTeXSyntax = function(inputText) {
 
 var checkAndReplaceTeXMath = function(inputText) {
     var divId = 'checkTexMath';
+    var previousText = inputText;
 
     inputText = inputText.replace(/\\begin{math}\s*(.*?)\s*\\end{math}/gi, '$1'); // replace math environment to $
-    inputText = inputText.replace(/\$([0-9*+-/><=() ]+?)?\$/gi, '$1'); // trivial math mode replacement: include literally
+    inputText = inputText.replace(/\\cdot/gi, '*'); // math mode replacement: include literally
+    inputText = inputText.replace(/\\times/gi, 'x'); // math mode replacement: include literally
+    inputText = inputText.replace(/\$([0-9x*+-/><=()^ ]+?)\$/gi, '$1'); // trivial math mode replacement: include literally
     if (inputText.match(/\$.*?\$/gi) != null) {
         // bad mathmode usage
-        addInfoMessage(divId, 'alert alert-danger', 'Contains complex TeX math. Is the abstract the right place for it?');
-    } else {
+        addInfoMessage(divId, 'alert alert-danger', 'Contains complex TeX math. Publishers do not like this! Is the abstract the right place for it?');
+    }
+    else if (previousText.match(/\$.*\^.*\$/gi) != null) {
+        // bad mathmode usage
+        addInfoMessage(divId, 'alert alert-danger', 'Contains an exponent. Publishers do not like this! I introduced a circumflex for you.');
+    } 
+    else {
         removeInfoMessage(divId);
     }
 
