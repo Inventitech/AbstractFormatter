@@ -129,7 +129,7 @@ var removeWhitespaces = function(inputText) {
 	inputText = inputText.replace(/$/gi, utfSpecialMarker);
 
 	inputText = inputText.replace(new RegExp(utfSpecialMarker+"([\\S\\s]+?)"+utfSpecialMarker,"gi"), '<p>$1</p>');
-	inputText = inputText.replace(/\n/gi, '');
+//	inputText = inputText.replace(/\n/gi, ' ');
 	inputText = inputText.replace(new RegExp(utfSpecialMarker,"gi"), '');
     }
 
@@ -142,7 +142,7 @@ var removeWhitespaces = function(inputText) {
     inputText = inputText.replace(/\s/gi, ' ');
     inputText = inputText.replace(/\s+/g, ' ');
 
-    inputText = inputText.replace(/^\s+/, ''); // removes leading whitespaces
+    inputText = inputText.replace(/^(<p>)?\s+/, '$1'); // removes leading whitespaces
     inputText = inputText.replace(/\s+$/, ''); // removes trailing whitespaces
    
     return inputText;
@@ -232,7 +232,7 @@ var checkNoInvalidQuestionMarks = function(inputText, length) {
 var checkReferences = function(inputText) {
     var divId = 'checkReferences';
     if (containsReferences(inputText)) {
-        addInfoMessage(divId, 'alert alert-warning', 'Your abstract contains references. It should not do that.');
+        addInfoMessage(divId, 'alert alert-danger', 'Your abstract contains references. It should not do that.');
     } else {
         removeInfoMessage(divId);
     }
