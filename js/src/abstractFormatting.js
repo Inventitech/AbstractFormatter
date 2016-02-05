@@ -121,6 +121,7 @@ var removeWhitespaces = function(inputText) {
     // trim every line
     inputText = inputText.replace(/^ */gm, '');
     inputText = inputText.replace(/$ */gm, '');
+    inputText = inputText.replace(/\r$/, ''); // removes possibly left-over windows linebreaks
 
     if(!flattenParagraphs) {
 	inputText = inputText.replace(/(\S+)\n(\s)*\n/gi, '$1'+utfSpecialMarker+utfSpecialMarker); 
@@ -132,10 +133,14 @@ var removeWhitespaces = function(inputText) {
 	inputText = inputText.replace(new RegExp(utfSpecialMarker,"gi"), '');
     }
 
+    inputText = inputText.replace(/(\w+)-\nand/g, '$1- and'); // deals with hyphenation: hyphen- and -> hyphen and
+    inputText = inputText.replace(/(\w+)-\n(\w+)/g, '$1$2'); // deals with hyphenation: hy-- phen -> hyphen
+
+
     // White-space replacements
     inputText = inputText.replace(/\s/gi, ' ');
     inputText = inputText.replace(/\s+/g, ' ');
-    inputText = inputText.replace(/(\w+)- (\w+)/g, '$1$2'); // deals with hyphenation: hy- phen -> hyphen
+
     inputText = inputText.replace(/^\s+/, ''); // removes leading whitespaces
     inputText = inputText.replace(/\s+$/, ''); // removes trailing whitespaces
    

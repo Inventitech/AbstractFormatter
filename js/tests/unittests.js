@@ -25,6 +25,12 @@ test('Contains Linbreaks', function() {
 	equal(containsLinebreak('This consists of not\n  \r one paragraph.'), true, 'Should detect multi paragraphs.');
 });
 
+test('Wordbreakage correct', function() {
+	equal(removeWhitespaces('This is a bro-\nken word.'), 'This is a broken word.', 'Word should be wrapped.');
+	equal(removeWhitespaces('This is another bro--\nken word.'), 'This is another bro-- ken word.', 'Word should be wrapped.');
+	equal(removeWhitespaces('This is the first-\n and second item.'), 'This is the first- and second item.', 'Word should not be wrapped.');
+});
+
 test('Starts with Abstract', function() {
 	equal(replaceAbstractStart('This abstract consists of one paragraph.'), 'This abstract consists of one paragraph.', 'Output should not be altered.');
 	equal(replaceAbstractStart('Abstract This consists of one paragraph.'), 'This consists of one paragraph.', 'Should remove beginning abstract.');
