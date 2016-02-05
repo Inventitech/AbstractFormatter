@@ -64,7 +64,7 @@ test('TeX Comments', function() {
 
 test('TeX Paragraphing', function() {
 	flattenParagraphs = false;
-	equal(removeWhitespaces('\n\nParagraph\n\nbla'), '<p>Paragraph</p>bla', 'Beginning paragraphs');
+	equal(removeWhitespaces('\n\nParagraph\n\nbla'), '<p>Paragraph</p><p>bla</p>', 'Beginning paragraphs');
 	equal(removeWhitespaces('\n\nParagraph\n\n'), '<p>Paragraph</p>', 'Ending paragraphs');
 	equal(removeWhitespaces('\n\nParagraph\n\n\n\n'), '<p>Paragraph</p>', 'No empty paragraphs');
 	flattenParagraphs = true;

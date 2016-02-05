@@ -21,20 +21,25 @@ var leastSensibleWords = 10;
 // Whether to flatten paragraphs. Default is true.
 var flattenParagraphs = true; 
 
+// Invisible, correct UTF marker char at begin and end of document
+var utfSpecialMarker = 'PMARKER';
+
 // General formatting method calling sub-check functions.
 var formatText = function(inputText) {
     inputText = removeLigatures(inputText);
-    inputText = removePseudoHTMLTags(inputText);
+    inputText = introducePseudoHTMLTags(inputText);
     inputText = removeCommentedOutLines(inputText);
     checkMultipleParagraphs(inputText);
     inputText = removeWhitespaces(inputText);
 
-    inputText = checkAbstractStart(inputText);
+    var plainText = removeHTMLTags(inputText);
 
-    var length = checkLength(inputText);
-    checkParagraphEndsCorrectly(inputText, length);
-    checkNoInvalidQuestionMarks(inputText, length);
-    checkReferences(inputText);
+    inputText = checkAndReplaceAbstractStart(plainText, inputText);
+
+    var length = checkLength(plainText);
+    checkParagraphEndsCorrectly(plainText, length);
+    checkNoInvalidQuestionMarks(plainText, length);
+    checkReferences(plainText);
 
     inputText = checkAndReplaceTeXSyntax(inputText);
 
@@ -52,9 +57,15 @@ var removeLigatures = function(inputText) {
 
 
 // Replace < and > with the HTML equivalent
-var removePseudoHTMLTags = function(inputText) {
+var introducePseudoHTMLTags = function(inputText) {
 	inputText = inputText.replace(/</gi, '&lt');
 	inputText = inputText.replace(/>/gi, '&gt');
+    return inputText;
+};
+
+// Remove all HTML tags (possibly introduced by paragraph-ization
+var removeHTMLTags = function(inputText) {
+	inputText = inputText.replace(/<.*?>/gi, '');
     return inputText;
 };
 
@@ -108,43 +119,52 @@ var containsLinebreak = function(inputText) {
 // Removes all whitespaces in the abstract.
 var removeWhitespaces = function(inputText) {
     // trim every line
-    inputText = inputText.replace(/^ +/gm, '');
-    inputText = inputText.replace(/$ +/gm, '');
+    inputText = inputText.replace(/^ */gm, '');
+    inputText = inputText.replace(/$ */gm, '');
 
     if(!flattenParagraphs) {
-	// Add invisible, correct UTF marker char at begin and end of document
-	var utfSpecialMarker = '\ufddf';
+	inputText = inputText.replace(/(\S+)\n(\s)*\n/gi, '$1'+utfSpecialMarker+utfSpecialMarker); 
 	inputText = inputText.replace(/^/gi, utfSpecialMarker);
 	inputText = inputText.replace(/$/gi, utfSpecialMarker);
-	inputText = inputText.replace(/\n(\s)*\n/gi, utfSpecialMarker+utfSpecialMarker); 
-	inputText = inputText.replace(/\ufddf([\S\s]+?)\ufddf/gi, '<p>$1</p>');
+
+	inputText = inputText.replace(new RegExp(utfSpecialMarker+"([\\S\\s]+?)"+utfSpecialMarker,"gi"), '<p>$1</p>');
+	inputText = inputText.replace(/\n/gi, '');
+	inputText = inputText.replace(new RegExp(utfSpecialMarker,"gi"), '');
     }
+
     // White-space replacements
     inputText = inputText.replace(/\s/gi, ' ');
     inputText = inputText.replace(/\s+/g, ' ');
     inputText = inputText.replace(/(\w+)- (\w+)/g, '$1$2'); // deals with hyphenation: hy- phen -> hyphen
     inputText = inputText.replace(/^\s+/, ''); // removes leading whitespaces
     inputText = inputText.replace(/\s+$/, ''); // removes trailing whitespaces
+   
     return inputText;
 };
 
+var checkAndReplaceAbstractStart = function(plainText, inputText) {
+    if(checkAbstractStart(plainText)) {
+	    inputText = replaceAbstractStart(inputText);
+    }
+    return inputText;
+}
+
 var checkAbstractStart = function(inputText) {
     var divId = 'abstractInfo';
-    inputText = replaceAbstractStart(inputText);
-	if (startsWithAbstract(inputText)) {
-		addInfoMessage(divId, 'alert alert-warning', 'Your abstract begins with the words abstract. I removed them for you.');
-	} else {
-        removeInfoMessage(divId);
+
+    if (startsWithAbstract(inputText)) {
+	addInfoMessage(divId, 'alert alert-warning', 'Your abstract begins with the words abstract. I removed them for you.');
+	return true;
+    } else {	
+	removeInfoMessage(divId);
+	return false;
     }
-	return inputText;
 };
 
 // Replaces the start of the abstract and removes abstract from its beginning.
 var replaceAbstractStart = function(inputText) {
-    if (startsWithAbstract(inputText)) {
-	inputText = inputText.replace(/^abstract(\W)*/i, '');
-	inputText = inputText.replace(/^p>/, '<p>'); // fix possibly broken p tag after removing abstract.	
-    }
+	inputText = inputText.replace(/^(<.*>)*abstract(\W)*/i, '$1');
+//	inputText = inputText.replace(/^p>/, '<p>'); // fix possibly broken p tag after removing abstract.	
     return inputText;
 };
 
