@@ -30,6 +30,7 @@ var formatText = function(inputText) {
     inputText = removeWhitespaces(inputText);
 
     inputText = checkAbstractStart(inputText);
+
     var length = checkLength(inputText);
     checkParagraphEndsCorrectly(inputText, length);
     checkNoInvalidQuestionMarks(inputText, length);
@@ -106,8 +107,17 @@ var containsLinebreak = function(inputText) {
 
 // Removes all whitespaces in the abstract.
 var removeWhitespaces = function(inputText) {
+    // trim every line
+    inputText = inputText.replace(/^ +/gm, '');
+    inputText = inputText.replace(/$ +/gm, '');
+
     if(!flattenParagraphs) {
-	inputText = inputText.replace(/(.+?)\n\n/gi, '<p>$1</p>');
+	// Add invisible, correct UTF marker char at begin and end of document
+	var utfSpecialMarker = '\ufddf';
+	inputText = inputText.replace(/^/gi, utfSpecialMarker);
+	inputText = inputText.replace(/$/gi, utfSpecialMarker);
+	inputText = inputText.replace(/\n(\s)*\n/gi, utfSpecialMarker+utfSpecialMarker); 
+	inputText = inputText.replace(/\ufddf([\S\s]+?)\ufddf/gi, '<p>$1</p>');
     }
     // White-space replacements
     inputText = inputText.replace(/\s/gi, ' ');
