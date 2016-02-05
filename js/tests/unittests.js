@@ -25,6 +25,12 @@ test('Contains Linbreaks', function() {
 	equal(containsLinebreak('This consists of not\n  \r one paragraph.'), true, 'Should detect multi paragraphs.');
 });
 
+test('Wordbreakage correct', function() {
+	equal(removeWhitespaces('This is a bro-\nken word.'), 'This is a broken word.', 'Word should be wrapped.');
+	equal(removeWhitespaces('This is another bro--\nken word.'), 'This is another bro-- ken word.', 'Word should be wrapped.');
+	equal(removeWhitespaces('This is the first-\n and second item.'), 'This is the first- and second item.', 'Word should not be wrapped.');
+});
+
 test('Starts with Abstract', function() {
 	equal(replaceAbstractStart('This abstract consists of one paragraph.'), 'This abstract consists of one paragraph.', 'Output should not be altered.');
 	equal(replaceAbstractStart('Abstract This consists of one paragraph.'), 'This consists of one paragraph.', 'Should remove beginning abstract.');
@@ -64,7 +70,7 @@ test('TeX Comments', function() {
 
 test('TeX Paragraphing', function() {
 	flattenParagraphs = false;
-	equal(removeWhitespaces('\n\nParagraph\n\nbla'), '<p>Paragraph</p>bla', 'Beginning paragraphs');
+	equal(removeWhitespaces('\n\nParagraph\n\nbla'), '<p>Paragraph</p><p>bla</p>', 'Beginning paragraphs');
 	equal(removeWhitespaces('\n\nParagraph\n\n'), '<p>Paragraph</p>', 'Ending paragraphs');
 	equal(removeWhitespaces('\n\nParagraph\n\n\n\n'), '<p>Paragraph</p>', 'No empty paragraphs');
 	flattenParagraphs = true;
@@ -89,6 +95,10 @@ test('Tex Math Replacement', function() {
 	equal(checkAndReplaceTeXMath('\\begin{math}\n5+5-2+3=11\n\\end{math}'), '5+5-2+3=11', 'math environment equivalent');
 	equal(checkAndReplaceTeXMath('\\begin{math}\n  5+5-2+3=11\n  \\end{math}'), '5+5-2+3=11', 'math environment equivalent');
 	equal(checkAndReplaceTeXMath('\\begin{math}5+5-2+3=11\\end{math}'), '5+5-2+3=11', 'math environment equivalent');
+	equal(checkAndReplaceTeXMath('$5^5$'), '5^5', 'Exponent Math mode translation.');
+	equal(checkAndReplaceTeXMath('Two formulae: $10^5$ and $20^5$'), 'Two formulae: 10^5 and 20^5', 'Exponent Math mode translation.');
+	equal(checkAndReplaceTeXMath('$5\\cdot5$'), '5*5', 'Multiplication Math mode translation.');
+	equal(checkAndReplaceTeXMath('$5\\times5$'), '5x5', 'Multiplication Math mode translation.');
 	equal(checkAndReplaceTeXMath('$5+5=\n10$'), '$5+5=\n10$', 'No math mode replacement.');
 	equal(checkAndReplaceTeXMath('$\\leftarrow$'), '$\\leftarrow$', 'No math mode replacement.');
 });

@@ -130,4 +130,3 @@ var addInfoMessage = function(divId, divClasses, message) {
 var removeInfoMessage = function(divId) {
     $('#' + divId).remove();
 };
-
