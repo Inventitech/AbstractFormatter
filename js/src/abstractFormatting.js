@@ -130,7 +130,7 @@ var removeWhitespaces = function(inputText) {
 	inputText = inputText.replace(/$/gi, utfSpecialMarker);
 
 	inputText = inputText.replace(new RegExp(utfSpecialMarker+"([\\S\\s]+?)"+utfSpecialMarker,"gi"), '<p>$1</p>');
-//	inputText = inputText.replace(/\n/gi, ' ');
+	inputText = inputText.replace(/\n/gi, ' ');
 	inputText = inputText.replace(new RegExp(utfSpecialMarker,"gi"), '');
     }
 
