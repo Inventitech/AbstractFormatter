@@ -21,10 +21,15 @@ $(document).ready(function() {
     $('#abstractTextarea').autosize();
 });
 
-// refreshes Abstract on textarea change
+// refreshes Abstract and sentiment score on textarea change
 $('#abstractTextarea').bind('input propertychange', function() {
-	refreshPreparedAbstract();
+    refreshPreparedAbstract();
+    refreshSentimentScore();
 });
+
+var refreshSentimentScore = function() {
+    displayAndCalculateAffin($('#formattedAbstract').text());    
+}
 
 var refreshPreparedAbstract = function() {
     var inputText = $('#abstractTextarea').val();
@@ -36,6 +41,7 @@ var clearAbstract = function() {
     $('#abstractTextarea').val('').trigger('autosize.resize');
     refreshPreparedAbstract();
     $('#formattedAbstract').text('Your formatted abstract from the PDF or LaTeX source!');
+    refreshSentimentScore();
 };
 
 // Function for dynamic dispatching of toggle text

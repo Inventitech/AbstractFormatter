@@ -1,4 +1,4 @@
-{
+afinn = {
   "abandon": -2,
   "abandoned": -2,
   "abandons": -2,
