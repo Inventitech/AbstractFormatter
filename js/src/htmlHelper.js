@@ -24,25 +24,25 @@ $(document).ready(function() {
 // refreshes Abstract and sentiment score on textarea change
 $('#abstractTextarea').bind('input propertychange', function() {
     refreshPreparedAbstract();
-    refreshSentimentScore();
 });
-
-var refreshSentimentScore = function() {
-    displayAndCalculateAffin($('#formattedAbstract').text());    
-}
 
 var refreshPreparedAbstract = function() {
     var inputText = $('#abstractTextarea').val();
     var processedText = formatText(inputText);
     $('#formattedAbstract').html(processedText);
-};
+    refreshSentimentScore();
+ };
+
+var refreshSentimentScore = function() {
+    colorizedText = displayAndCalculateAffin($('#formattedAbstract').text(), $('#formattedAbstract').html());
+    $('#formattedAbstract').html(colorizedText);
+}
 
 var clearAbstract = function() {
     $('#abstractTextarea').val('').trigger('autosize.resize');
     refreshPreparedAbstract();
     $('#formattedAbstract').text('Your formatted abstract from the PDF or LaTeX source!');
-    refreshSentimentScore();
-};
+ };
 
 // Function for dynamic dispatching of toggle text
 collapsed = true;

@@ -15,36 +15,61 @@
 
 // This file performs a basic sentiment analysis using the AFINN-111 list
 
-var sentimentDescription = 'Your <abbr title="Sentiment analysis refers to the use of natural language processing, text analysis and computational linguistics to identify and extract subjective information in source materials (Wikipedia). Here, we report a normalized score that is 0 for neutral abstracts, and more extreme positive or negative depending on the detected sentiment.">sentiment score</abbr> is <strong>';
+var sentimentDescription = 'Your abstract\'s <abbr title="Sentiment analysis refers to the use of natural language processing, text analysis and computational linguistics to identify and extract subjective information in source materials (Wikipedia). Here, we report a normalized score that is 0 for neutral abstracts, and more extreme positive or negative depending on the detected sentiment.">sentiment score</abbr> is <strong>';
 
 var negativeWords = [];
+var positiveWors = [];
 
-var displayAndCalculateAffin = function(text) {
-    score = computeAfinnScore(text);
+var displayAndCalculateAffin = function(text, html) {
     divId = "sentiment";
+    score = computeAfinnScore(text);
+    html = colorize(html);
     
     removeInfoMessage(divId);
     if(score < 0) {
-	addInfoMessage(divId, 'alert alert-danger', sentimentDescription + score + '</strong>. A score below 0 might convey negative connotation. Words dragging your score down: ' + negativeWords.join(", "));
+	addInfoMessage(divId, 'alert alert-danger', sentimentDescription + score + '</strong>. It might convey a negative feeling.');
     }
     else if(score >= 0) { // NaN case is excluded, not identical with else
 	addInfoMessage(divId, 'alert alert-success', sentimentDescription + score + '</strong>. Well done!');
     }
+
+    return html;
 }
 
 var computeAfinnScore = function(text) {
     negativeWords = [];
+    positiveWords = [];
     var words = text.split(/\W/).filter(function(w) { return !(w.length === 0 || !w.trim()); });
     var score = 0;
-    for(var i=0; i<words.length; i++) {
+    for(var i=0; i < words.length; i++) {
 	word = words[i].toLowerCase();
 	if(afinn.hasOwnProperty(word)) {
-	    score += afinn[word];
-	    if(afinn[word] < 0) {
-		negativeWords.push(word);
+	    afinnScore= afinn[word]
+	    score += afinnScore;
+	    if(afinnScore < 0) {
+		negativeWords.push(words[i]);
+	    }
+	    else if(afinnScore > 0) {
+		positiveWords.push(words[i]);
 	    }
 	}
     }
     
     return Math.round(score/words.length*1000)/1000;
+}
+
+var colorize = function(text) {
+    text = makeReplacement(text, positiveWords, "#3c763d");
+    text = makeReplacement(text, negativeWords, "#a94442");
+
+    return text;
+}
+
+var makeReplacement = function(text, words, color) {
+    for(var i=0; i < words.length; i++) {
+	var re = new RegExp('(\\W)?' + words[i] + '(\\W)?', 'g');
+	text = text.replace(re, '\$1<abbr title="Sentiment effect: ' +
+		     afinn[words[i].toLowerCase()] + '" style="color:' + color + '; border-color:' + color + '">' + words[i] + '</abbr>\$2');
+    }
+    return text;
 }
