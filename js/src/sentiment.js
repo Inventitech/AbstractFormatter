@@ -15,7 +15,9 @@
 
 // This file performs a basic sentiment analysis using the AFINN-111 list
 
-var sentimentDescription = 'Your <abbr title="Sentiment analysis refers to the use of natural language processing, text analysis and computational linguistics to identify and extract subjective information in source materials (Wikipedia). Here, we report a normalized score that is 0 for neutral abstracts, and more extreme positive or negative depending on the detected sentiment.">sentiment score</abbr> is ';
+var sentimentDescription = 'Your <abbr title="Sentiment analysis refers to the use of natural language processing, text analysis and computational linguistics to identify and extract subjective information in source materials (Wikipedia). Here, we report a normalized score that is 0 for neutral abstracts, and more extreme positive or negative depending on the detected sentiment.">sentiment score</abbr> is <strong>';
+
+var negativeWords = [];
 
 var displayAndCalculateAffin = function(text) {
     score = computeAfinnScore(text);
@@ -23,21 +25,24 @@ var displayAndCalculateAffin = function(text) {
     
     removeInfoMessage(divId);
     if(score < 0) {
-	addInfoMessage(divId, 'alert alert-danger', sentimentDescription + score + '. A score below 0 might convey negative connotation.');
+	addInfoMessage(divId, 'alert alert-danger', sentimentDescription + score + '</strong>. A score below 0 might convey negative connotation. Words dragging your score down: ' + negativeWords.join(", "));
     }
-    else {
-	addInfoMessage(divId, 'alert alert-success', sentimentDescription + score + '. well done!');
+    else if(score >= 0) { // NaN case is excluded, not identical with else
+	addInfoMessage(divId, 'alert alert-success', sentimentDescription + score + '</strong>. Well done!');
     }
 }
 
 var computeAfinnScore = function(text) {
+    negativeWords = [];
     var words = text.split(/\W/).filter(function(w) { return !(w.length === 0 || !w.trim()); });
     var score = 0;
     for(var i=0; i<words.length; i++) {
 	word = words[i].toLowerCase();
-	console.log(word)
 	if(afinn.hasOwnProperty(word)) {
 	    score += afinn[word];
+	    if(afinn[word] < 0) {
+		negativeWords.push(word);
+	    }
 	}
     }
     
