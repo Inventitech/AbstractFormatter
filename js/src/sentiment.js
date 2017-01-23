@@ -67,9 +67,9 @@ var colorize = function(text) {
 
 var makeReplacement = function(text, words, color) {
     for(var i=0; i < words.length; i++) {
-	var re = new RegExp('(\\W)?' + words[i] + '(\\W)?', 'g');
-	text = text.replace(re, '\$1<abbr title="Sentiment effect: ' +
-		     afinn[words[i].toLowerCase()] + '" style="color:' + color + '; border-color:' + color + '">' + words[i] + '</abbr>\$2');
+	var re = new RegExp('(^|\\W)('+words[i]+')(\\W|$)', 'g');
+	text = text.replace(re, '$1<abbr title="Sentiment effect: ' +
+		     afinn[words[i].toLowerCase()] + '" style="color:' + color + '; border-color:' + color + '">' + words[i] + '</abbr>$3');
     }
     return text;
 }
