@@ -155,6 +155,50 @@ var removeNonPrintableChars = function(inputText) {
     return inputText.replace(re, "");
 }
 
+var isUncommonWord = function(word, commonWordsSet) {
+    if (!word || word.length === 0) {
+        return false;
+    }
+    // Normalize word: lowercase and remove leading/trailing punctuation
+    // More robust punctuation removal might be needed depending on the dataset
+    var normalizedWord = word.toLowerCase().replace(/^[^\w]+|[^\w]+$/g, '');
+    if (normalizedWord.length === 0) {
+        return false; // Word was purely punctuation
+    }
+    return !commonWordsSet.has(normalizedWord);
+};
+
+var underlineUncommonWords = function(inputText, commonWordsSet) {
+    var words = inputText.split(/(\s+|(?=<)|(?<=>)|[.,;:!?()"'])/g); // Split by spaces, keeping delimiters and HTML tags
+    var resultText = "";
+    var uncommonCount = 0;
+    var inTag = false;
+
+    for (var i = 0; i < words.length; i++) {
+        var currentWord = words[i];
+        if (currentWord.startsWith('<')) {
+            inTag = true;
+        }
+
+        if (!inTag && currentWord.trim().length > 0 && isUncommonWord(currentWord, commonWordsSet)) {
+            // Check if the word is purely punctuation before underlining
+            if (!/^[.,;:!?()"']+$/.test(currentWord.trim())) {
+                 resultText += '<u>' + currentWord + '</u>';
+                 uncommonCount++;
+            } else {
+                resultText += currentWord; // It's just punctuation, don't underline
+            }
+        } else {
+            resultText += currentWord;
+        }
+
+        if (currentWord.endsWith('>')) {
+            inTag = false;
+        }
+    }
+    return { textWithUnderlines: resultText, uncommonWordCount: uncommonCount };
+};
+
 var checkAndReplaceAbstractStart = function(plainText, inputText) {
     if(checkAbstractStart(plainText)) {
 	    inputText = replaceAbstractStart(inputText);

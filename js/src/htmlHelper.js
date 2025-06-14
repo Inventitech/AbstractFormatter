@@ -15,10 +15,28 @@
 
 // This files contains helper functions that deal with the HTML.
 
+var commonWordsSet = new Set();
+
 // global html setup
 // activate auto-resizing of textarea
 $(document).ready(function() {
     $('#abstractTextarea').autosize();
+    $.get('js/libs/top_10000_words.txt', function(data) {
+        var words = data.split('\n');
+        words.forEach(function(word) {
+            if (word.trim() !== '') {
+                commonWordsSet.add(word.trim().toLowerCase());
+            }
+        });
+        // console.log('Common words loaded: ' + commonWordsSet.size); // Optional: for debugging
+    }).fail(function() {
+        console.error("Error loading word list.");
+        // Optionally, add a user-facing error message here
+    });
+
+    $('#enableWordCheck').change(function() {
+        refreshPreparedAbstract();
+    });
 });
 
 // refreshes Abstract and sentiment score on textarea change
