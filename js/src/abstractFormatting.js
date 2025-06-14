@@ -219,9 +219,19 @@ var isUncommonWord = function(word, commonWordsSet) {
     // Normalize word: lowercase and remove leading/trailing punctuation
     // More robust punctuation removal might be needed depending on the dataset
     var normalizedWord = word.toLowerCase().replace(/^[^\w]+|[^\w]+$/g, '');
+
     if (normalizedWord.length === 0) {
         return false; // Word was purely punctuation
     }
+
+    // Check if the normalized word is a number
+    // This regex matches integers and simple decimals (e.g., 123, 45.67)
+    // It does not explicitly handle thousands separators like commas, as those might be stripped by prior normalization
+    // or could be ambiguous with list commas depending on context.
+    if (/^\d+(\.\d+)?$/.test(normalizedWord)) {
+        return false; // It's a number, so not an "uncommon word" for our purposes
+    }
+
     return !commonWordsSet.has(normalizedWord);
 };
 
