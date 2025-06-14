@@ -69,7 +69,7 @@ var formatText = function(inputText) {
                 for (var k = 0; k < textWords.length; k++) {
                     var segment = textWords[k];
                     if (segment.trim().length > 0 && !segment.match(/^[\s.,;:!?()"'{}\[\]]+$/) && isUncommonWord(segment, commonWordsSet)) {
-                        newHtmlContent += '<span class="uncommon-word">' + segment + '</span>'; // MODIFIED LINE
+                        newHtmlContent += '<span class="uncommon-word" title="This word is not very common.">' + segment + '</span>'; // Modified this line
                         uncommonWordsFoundInTotal++;
                     } else {
                         newHtmlContent += segment;

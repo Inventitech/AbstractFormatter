@@ -27,3 +27,201 @@ test('Analyze This Paper Quote', function() {
     equal(formatText(input), expected, 'Test on Analyze This Paper Quote (PDF)');
     flattenParagraphs = true;
 });
+
+
+module("Uncommon Word Highlighting", {
+    beforeEach: function() {
+        // Populate QUnit fixture with necessary HTML elements
+        $('#qunit-fixture').html(
+            '<textarea id="abstractTextarea"></textarea>' +
+            '<input type="checkbox" id="enableWordCheck">' +
+            '<div id="infoMessages"></div>' + // For addInfoMessage
+            '<div id="dangerMessages"></div>' + // For addInfoMessage
+            '<div id="warningMessages"></div>' + // For addInfoMessage
+            '<div id="formattedAbstract"></div>'
+        );
+
+        // Mock commonWordsSet for testing
+        // Ensure this is accessible by abstractFormatting.js,
+        // ideally by making commonWordsSet a global in htmlHelper.js or passing it around.
+        // For these tests, we'll assume it's globally available for simplicity of the test code.
+        window.commonWordsSet = new Set(["this", "is", "a", "an", "to", "be", "the", "and", "of", "test", "common", "words", "wonderful", "abstract", "but", "there", "are", "with", "very", "on", "its", "effects", "life", "truly", "example", "some"]);
+
+        // Mock addInfoMessage and removeInfoMessage to check their calls and simplify DOM checking for messages
+        // These will override the stubs from unittests.js if they were global, or provide fresh mocks.
+        this.infoMessages = {}; // Store messages by ID
+        var self = this;
+        window.addInfoMessage = function(id, cssClass, message) {
+            self.infoMessages[id] = { text: message, css: cssClass };
+            // Also add to DOM for completeness if other tests rely on it
+            var messageDiv;
+            if (cssClass.includes('danger')) messageDiv = $('#dangerMessages');
+            else if (cssClass.includes('warning')) messageDiv = $('#warningMessages');
+            else messageDiv = $('#infoMessages');
+
+            if ($('#' + id).length === 0) {
+                messageDiv.append('<div id="' + id + '" class="' + cssClass + '">' + message + '</div>');
+            } else {
+                $('#' + id).html(message).attr('class', cssClass);
+            }
+        };
+        window.removeInfoMessage = function(id) {
+            delete self.infoMessages[id];
+            $('#' + id).remove();
+        };
+
+        // Ensure flattenParagraphs is reset to its default for these tests if necessary
+        window.flattenParagraphs = true;
+    },
+    afterEach: function() {
+        // Clean up the fixture
+        $('#qunit-fixture').empty();
+        // Restore original functions if they were globally overridden for testing, or clear mocks
+        // For this example, we'll assume the next beforeEach will reset them.
+        // delete window.commonWordsSet;
+        // delete window.addInfoMessage;
+        // delete window.removeInfoMessage;
+    }
+});
+
+test("Feature enabled by default, highlights uncommon words", function(assert) {
+    $('#enableWordCheck').prop('checked', true); // Default state
+    $('#abstractTextarea').val("This is a test with a very floccinaucinihilipilification word.");
+
+    // Simulate the call chain from htmlHelper.js
+    var inputText = $('#abstractTextarea').val();
+    var processedText = formatText(inputText); // formatText is from abstractFormatting.js
+    $('#formattedAbstract').html(processedText);
+
+    var expectedHtml = 'This is a test with a very <span class="uncommon-word" title="This word is not very common.">floccinaucinihilipilification</span> word.';
+    assert.equal($('#formattedAbstract').html(), expectedHtml, "Uncommon word should be wrapped in span.uncommon-word");
+
+    var uncommonMessageId = 'uncommonWordsInfo';
+    assert.ok(this.infoMessages[uncommonMessageId], "Info message should be present.");
+    if (this.infoMessages[uncommonMessageId]) {
+        assert.equal(this.infoMessages[uncommonMessageId].text, "Found 1 uncommon words (not in top 10,000).", "Correct uncommon word count message.");
+    }
+});
+
+test("Feature disabled, no highlighting or message", function(assert) {
+    $('#enableWordCheck').prop('checked', false);
+    $('#abstractTextarea').val("This is a test with a very floccinaucinihilipilification word.");
+
+    var inputText = $('#abstractTextarea').val();
+    var processedText = formatText(inputText);
+    $('#formattedAbstract').html(processedText);
+
+    var expectedHtml = "This is a test with a very floccinaucinihilipilification word."; // No span
+    assert.equal($('#formattedAbstract').html(), expectedHtml, "Uncommon word should NOT be wrapped when feature is disabled.");
+
+    var uncommonMessageId = 'uncommonWordsInfo';
+    assert.notOk(this.infoMessages[uncommonMessageId], "Info message should NOT be present when feature is disabled.");
+    assert.equal($('#' + uncommonMessageId).length, 0, "Info message DOM element should be removed.");
+});
+
+test("Feature enabled, no uncommon words", function(assert) {
+    $('#enableWordCheck').prop('checked', true);
+    $('#abstractTextarea').val("This is a test of common words.");
+
+    var inputText = $('#abstractTextarea').val();
+    var processedText = formatText(inputText);
+    $('#formattedAbstract').html(processedText);
+
+    var expectedHtml = "This is a test of common words."; // No span
+    assert.equal($('#formattedAbstract').html(), expectedHtml, "No words should be underlined.");
+
+    var uncommonMessageId = 'uncommonWordsInfo';
+    assert.notOk(this.infoMessages[uncommonMessageId], "Info message should not be present if no uncommon words found.");
+    assert.equal($('#' + uncommonMessageId).length, 0, "Info message DOM element should be removed if no uncommon words.");
+});
+
+test("User's example: 'worng' should be highlighted", function(assert) {
+    $('#enableWordCheck').prop('checked', true);
+    $('#abstractTextarea').val("This is a wonderful abstract, but there are worng words.");
+
+    // Manually add 'worng' to the global commonWordsSet to test exclusion
+    // For this test, 'worng' is NOT in commonWordsSet defined in beforeEach
+
+    var inputText = $('#abstractTextarea').val();
+    var processedText = formatText(inputText);
+    $('#formattedAbstract').html(processedText);
+
+    var expectedHtml = 'This is a wonderful abstract, but there are <span class="uncommon-word" title="This word is not very common.">worng</span> words.';
+    assert.equal($('#formattedAbstract').html(), expectedHtml, "'worng' should be wrapped in span.uncommon-word");
+
+    var uncommonMessageId = 'uncommonWordsInfo';
+    assert.ok(this.infoMessages[uncommonMessageId], "Info message should be present.");
+    if (this.infoMessages[uncommonMessageId]) {
+        assert.equal(this.infoMessages[uncommonMessageId].text, "Found 1 uncommon words (not in top 10,000).", "Correct count for 'worng'.");
+    }
+});
+
+test("Punctuation handling with uncommon words", function(assert) {
+    $('#enableWordCheck').prop('checked', true);
+    $('#abstractTextarea').val("An extraordinarius! Another, extraordinarius. (Extrordinarius).");
+    // 'extrordinarius' is not in the mocked commonWordsSet
+
+    var inputText = $('#abstractTextarea').val();
+    var processedText = formatText(inputText);
+    $('#formattedAbstract').html(processedText);
+
+    // Expected HTML needs to be precise about span placement relative to punctuation
+    var expectedHtml = 'An <span class="uncommon-word" title="This word is not very common.">extraordinarius</span>! Another, <span class="uncommon-word" title="This word is not very common.">extraordinarius</span>. (<span class="uncommon-word" title="This word is not very common.">Extrordinarius</span>).';
+    assert.equal($('#formattedAbstract').html(), expectedHtml, "Uncommon words with punctuation should be correctly wrapped.");
+
+    var uncommonMessageId = 'uncommonWordsInfo';
+    assert.ok(this.infoMessages[uncommonMessageId], "Info message should be present.");
+    if (this.infoMessages[uncommonMessageId]) {
+        assert.equal(this.infoMessages[uncommonMessageId].text, "Found 3 uncommon words (not in top 10,000).", "Correct count for punctuation test.");
+    }
+});
+
+test("Initial page load with default checked and text (simulated)", function(assert) {
+    // Simulate that index.html has the checkbox checked by default
+    $('#enableWordCheck').prop('checked', true);
+    $('#abstractTextarea').val("Initial text with supercalifragilisticexpialidocious word.");
+    // 'supercalifragilisticexpialidocious' is not in mocked commonWordsSet
+
+    // In a real scenario, refreshPreparedAbstract would be called by htmlHelper.js on load.
+    // We simulate that call here.
+    refreshPreparedAbstract(); // This function itself calls formatText and updates #formattedAbstract
+
+    var expectedHtml = 'Initial text with <span class="uncommon-word" title="This word is not very common.">supercalifragilisticexpialidocious</span> word.';
+    assert.equal($('#formattedAbstract').html(), expectedHtml, "Uncommon word should be highlighted on initial simulated load.");
+
+    var uncommonMessageId = 'uncommonWordsInfo';
+    assert.ok(this.infoMessages[uncommonMessageId], "Info message should be present on initial load.");
+    if (this.infoMessages[uncommonMessageId]) {
+        assert.equal(this.infoMessages[uncommonMessageId].text, "Found 1 uncommon words (not in top 10,000).", "Correct count on initial load.");
+    }
+});
+
+test("Toggling checkbox OFF and ON", function(assert) {
+    $('#abstractTextarea').val("One uncommontestword here.");
+    // 'uncommontestword' is not in mocked commonWordsSet
+
+    // Initial state: ON (default or set)
+    $('#enableWordCheck').prop('checked', true);
+    refreshPreparedAbstract(); // Call manually like a page load or input change
+
+    var expectedHtmlOn = 'One <span class="uncommon-word" title="This word is not very common.">uncommontestword</span> here.';
+    assert.equal($('#formattedAbstract').html(), expectedHtmlOn, "Initially ON: Uncommon word should be highlighted.");
+    assert.ok(this.infoMessages['uncommonWordsInfo'], "Initially ON: Info message should be present.");
+
+    // Toggle OFF
+    $('#enableWordCheck').prop('checked', false).trigger('change'); // Trigger change to simulate user action and run event handler
+
+    var expectedHtmlOff = "One uncommontestword here.";
+    assert.equal($('#formattedAbstract').html(), expectedHtmlOff, "Toggled OFF: Uncommon word should NOT be highlighted.");
+    assert.notOk(this.infoMessages['uncommonWordsInfo'], "Toggled OFF: Info message should NOT be present.");
+    assert.equal($('#uncommonWordsInfo').length, 0, "Toggled OFF: Info message DOM element should be removed.");
+
+    // Toggle ON again
+    $('#enableWordCheck').prop('checked', true).trigger('change');
+
+    assert.equal($('#formattedAbstract').html(), expectedHtmlOn, "Toggled ON again: Uncommon word should be highlighted.");
+    assert.ok(this.infoMessages['uncommonWordsInfo'], "Toggled ON again: Info message should be present.");
+    if (this.infoMessages['uncommonWordsInfo']) {
+        assert.equal(this.infoMessages['uncommonWordsInfo'].text, "Found 1 uncommon words (not in top 10,000).", "Correct count when toggled ON again.");
+    }
+});

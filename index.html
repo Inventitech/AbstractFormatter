@@ -38,8 +38,11 @@
 #formattedAbstract:hover { background: #eee; }
 .active { background: #eee; }
 .uncommon-word {
-    text-decoration: underline;
-    /* Optional: Add a specific color if needed for more differentiation, e.g., color: blue; */
+    text-decoration-line: underline;
+    text-decoration-style: wavy;
+    text-decoration-color: red;
+    /* A fallback for older browsers, though less ideal styling: */
+    /* border-bottom: 1px dotted red; */ /* Or text-decoration: underline; color: red; */
 }
 </style>
   </head>
