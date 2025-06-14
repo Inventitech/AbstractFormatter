@@ -127,6 +127,7 @@ $(function() {
         $('#formattedAbstract').selectText();
     });
     formatAbstractFromURL();
+    refreshPreparedAbstract(); // Add this new call
 });
 
 $('#prepared').hover(
