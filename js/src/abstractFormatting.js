@@ -44,6 +44,58 @@ var formatText = function(inputText) {
 
     inputText = checkAndReplaceTeXSyntax(inputText);
 
+    // New uncommon word check logic
+    var uncommonWordCheckEnabled = $('#enableWordCheck').is(':checked');
+    var uncommonWordsMessageId = 'uncommonWordsInfo';
+    removeInfoMessage(uncommonWordsMessageId); // Clear previous message first
+
+
+    if (uncommonWordCheckEnabled && typeof commonWordsSet !== 'undefined' && commonWordsSet.size > 0) {
+        // Create a temporary div to parse HTML and extract text nodes
+        var tempDiv = document.createElement('div');
+        tempDiv.innerHTML = inputText; // inputText here might have <p> tags from paragraph handling
+
+        var uncommonWordsFoundInTotal = 0;
+        var nodesToProcess = [tempDiv];
+
+        while(nodesToProcess.length > 0) {
+            var node = nodesToProcess.pop();
+            if (node.nodeType === Node.TEXT_NODE) {
+                var textContent = node.nodeValue;
+                var newHtmlContent = "";
+                // Improved word splitting, handles punctuation better
+                var textWords = textContent.split(/([\s.,;:!?()"'{}\[\]])/g);
+
+                for (var k = 0; k < textWords.length; k++) {
+                    var segment = textWords[k];
+                    if (segment.trim().length > 0 && !segment.match(/^[\s.,;:!?()"'{}\[\]]+$/) && isUncommonWord(segment, commonWordsSet)) {
+                        newHtmlContent += '<span class="uncommon-word">' + segment + '</span>'; // MODIFIED LINE
+                        uncommonWordsFoundInTotal++;
+                    } else {
+                        newHtmlContent += segment;
+                    }
+                }
+
+                if (newHtmlContent !== textContent) {
+                    var spanReplacement = document.createElement('span');
+                    spanReplacement.innerHTML = newHtmlContent;
+                    node.parentNode.replaceChild(spanReplacement, node);
+                }
+
+            } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
+                for (var j = node.childNodes.length - 1; j >= 0; j--) {
+                    nodesToProcess.push(node.childNodes[j]);
+                }
+            }
+        }
+
+        inputText = tempDiv.innerHTML;
+
+        if (uncommonWordsFoundInTotal > 0) {
+            addInfoMessage(uncommonWordsMessageId, 'alert alert-info', 'Found ' + uncommonWordsFoundInTotal + ' uncommon words (not in top 10,000).');
+        }
+    }
+
     return inputText;
 };
 
@@ -154,6 +206,11 @@ var removeNonPrintableChars = function(inputText) {
 
     return inputText.replace(re, "");
 }
+
+// isUncommonWord function was already here from the previous read_files output,
+// but it's good to ensure it's correctly placed relative to other functions if it had been missing.
+// For this diff, we assume it's present and correctly defined as per prior steps.
+// The primary change is within formatText and ensuring isUncommonWord is callable.
 
 var isUncommonWord = function(word, commonWordsSet) {
     if (!word || word.length === 0) {
