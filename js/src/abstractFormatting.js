@@ -213,26 +213,68 @@ var removeNonPrintableChars = function(inputText) {
 // The primary change is within formatText and ensuring isUncommonWord is callable.
 
 var isUncommonWord = function(word, commonWordsSet) {
-    if (!word || word.length === 0) {
+    if (!word || word.trim().length === 0) {
         return false;
     }
-    // Normalize word: lowercase and remove leading/trailing punctuation
-    // More robust punctuation removal might be needed depending on the dataset
-    var normalizedWord = word.toLowerCase().replace(/^[^\w]+|[^\w]+$/g, '');
 
-    if (normalizedWord.length === 0) {
+    // Clean leading/trailing punctuation, preserve case for ALL CAPS check
+    // Allows letters, numbers, and internal hyphens/apostrophes for now.
+    var cleanedWord = word.replace(/^[^A-Za-z0-9\-_']+|[^A-Za-z0-9\-_']+$/g, '');
+
+    if (cleanedWord.length === 0) {
         return false; // Word was purely punctuation
     }
 
-    // Check if the normalized word is a number
-    // This regex matches integers and simple decimals (e.g., 123, 45.67)
-    // It does not explicitly handle thousands separators like commas, as those might be stripped by prior normalization
-    // or could be ambiguous with list commas depending on context.
-    if (/^\d+(\.\d+)?$/.test(normalizedWord)) {
-        return false; // It's a number, so not an "uncommon word" for our purposes
+    // 1. Check for ALL CAPS words (>= 2 letters, only A-Z)
+    // This check is done before converting to lowercase.
+    if (cleanedWord.length >= 2 && /^[A-Z]+$/.test(cleanedWord)) {
+        return false; // All caps words (like acronyms) are considered "not uncommon"
     }
 
-    return !commonWordsSet.has(normalizedWord);
+    // Normalize word to lowercase for subsequent checks
+    var normalizedWord = cleanedWord.toLowerCase();
+
+    // Further normalization: remove trailing dot or comma if missed or if it's part of the segment
+    normalizedWord = normalizedWord.replace(/[.,]$/, '');
+    if (normalizedWord.length === 0) {
+        return false;
+    }
+
+
+    // 2. Check if it's a number (should not be underlined)
+    if (/^\d+(\.\d+)?$/.test(normalizedWord)) {
+        return false;
+    }
+
+    // 3. Check if the word itself is in the common words set
+    if (commonWordsSet.has(normalizedWord)) {
+        return false;
+    }
+
+    // 4. Check for plural forms by trying to convert to singular
+    if (normalizedWord.length > 2) {
+        var singularForm = "";
+
+        if (normalizedWord.endsWith('ies') && normalizedWord.length > 3) { // e.g. cities -> city
+            singularForm = normalizedWord.slice(0, -3) + 'y';
+            if (commonWordsSet.has(singularForm)) return false;
+        } else if (normalizedWord.endsWith('ves') && normalizedWord.length > 3) { // e.g. knives -> knife
+            singularForm = normalizedWord.slice(0, -3) + 'f';
+            if (commonWordsSet.has(singularForm)) return false;
+        } else if ((normalizedWord.endsWith('shes') || normalizedWord.endsWith('ches') || normalizedWord.endsWith('xes') || normalizedWord.endsWith('oes')) && normalizedWord.length > 3) {
+            // Handles -es endings for words like dishes, churches, boxes, tomatoes
+            singularForm = normalizedWord.slice(0, -2);
+            if (commonWordsSet.has(singularForm)) return false;
+        } else if (normalizedWord.endsWith('s') && !normalizedWord.endsWith('ss') && !normalizedWord.endsWith('us') && normalizedWord.length > 1) {
+            // General 's' plural, avoid 'ss' (class), 'us' (bus)
+            // Ensure word is long enough that removing 's' is meaningful
+            singularForm = normalizedWord.slice(0, -1);
+            if (commonWordsSet.has(singularForm)) return false;
+        }
+    }
+
+    // 5. If all checks fail, the word is considered uncommon
+    return true;
 };
 
 var underlineUncommonWords = function(inputText, commonWordsSet) {
